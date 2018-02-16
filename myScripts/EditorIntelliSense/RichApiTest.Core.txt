@@ -1,0 +1,152 @@
+declare namespace RichApiTest {
+    var hasMonacoEditor: boolean;
+    var settings: {
+        timeoutSeconds: number;
+        baseUri: string;
+    };
+    var testNamespaceObjs: any[];
+    var testFunctionsSourceData: {
+        [key: string]: {
+            text: string;
+            isAsync: boolean;
+        };
+    };
+    var testNamespaceObjectsToExpose: string[];
+    class Logger {
+        currentTestName: string;
+        comment(message: string): void;
+        clear(): void;
+        clearDone(): void;
+        done(success: boolean): void;
+        fail(message?: string): void;
+        pass(message?: string): void;
+        image(imgData: string, filetype?: string): void;
+    }
+    var log: Logger;
+    function stripSpaces(text: string): string;
+    namespace UIConstants {
+        var TxtRichApiAgsUrl: string;
+        var TxtRichApiAgsFileName: string;
+        var TxtRichApiEmbeddedUrl: string;
+        var TxtRichApiHeaderName1: string;
+        var TxtRichApiHeaderName2: string;
+        var TxtRichApiHeaderName3: string;
+        var TxtRichApiHeaderValue1: string;
+        var TxtRichApiHeaderValue2: string;
+        var TxtRichApiHeaderValue3: string;
+        var TxtRichApiRestBaseUrlOverride: string;
+        var ChkRichApiUseCors: string;
+        var ChkRichApiUpdateDefaultUrlAndHeaders: string;
+    }
+    function buildUI(parent: HTMLDivElement, testNsObj: string, intellisensePaths: string[], testSourceMap: {
+        [namespace: string]: string;
+    }): void;
+    var groups: Array<string>;
+    var testVersions: Array<string>;
+    var testsExist: boolean;
+    function appendTests(namespaceStringOrObject: any): void;
+    function arrayPushUnique(arr: Array<string>, item: string): boolean;
+    function arrayPushUniqueWithKey(arr: Array<string>, item: string, key: string): boolean;
+    function toggleCurrentGroupSelection(): void;
+    function toggleCheckboxFilters(): void;
+    function hideAllTestGroups(): void;
+    function showAllTestGroups(): void;
+    function toggleAllTestButtons(): void;
+    function invokeScriptEditorRunButton(): void;
+    function setNewScript(): void;
+    function invokeRest(): void;
+    function invokeOneTest(testName: string, fullFuncName: string, isManualClick?: boolean): void;
+    function clearAllTestResult(): void;
+    function invokeAllTests(): void;
+    function invokeTestsWithKeywords(): void;
+    function invokeAllVisibleTests(): void;
+    function pasteOAuthToken(): void;
+    function initImplicitFlowNavigate(): void;
+    function clearUrlBackToLocalHost(): void;
+    function initGraphForImplicitFlow(): void;
+    function initGraphSettings(): void;
+    var embeddedSession: any;
+    function initEmbeddedFrame(): void;
+    class IntentionalSkip extends Error {
+        constructor(message: string);
+    }
+    function reportError(errorInfo: Error): void;
+    function reportJQueryError(xhr: JQueryXHR): void;
+    class Util {
+        static vocalizeAssert(assertCall: () => any): any;
+        static assert(statement: boolean, explanation?: string): void;
+        static assert(statement: () => boolean): any;
+        static assertCompareArray(value: any, expected: any): boolean;
+        static assertCompareValues(expectedValue: any, actualValue: any, additionalComment?: string): boolean;
+        static assertCompareValuesNotEqual(value1: any, value2: any, additionalComment?: string): boolean;
+        static assertCompareNumeric(expectedValue: number, actualValue: number, allowableMarginOfError: number, additionalComment?: string): boolean;
+        static assertCompareObjectsAsJson(expected: Object, obj: Object): void;
+        static compare(value: any, expected: any, delta?: number): boolean;
+        static parseStringAsNumberAndCompare(value: any, expected: any): boolean;
+        static compareProperty(object: any, propertyName: any, expected: any): boolean;
+        static compareArray(value: any, expected: any): boolean;
+        static isObject(obj: any): boolean;
+        static startsWith(thisString: string, searchString: string, position?: number): boolean;
+        static ensureSyncFailed(ctx: any, expectedErrorCode: string, additionalValidation?: (errorInfo: OfficeExtension.Error) => boolean, onCompletion?: () => void): void;
+        static ensureSyncFailedPromise(ctx: any, expectedErrorCode: string, expectedErrorLocation?: string): OfficeExtension.IPromise<OfficeExtension.Error>;
+        static promisify<T>(action: (callback) => void): OfficeExtension.IPromise<T>;
+        static wait(milliseconds: number, action?: () => void): OfficeExtension.IPromise<any>;
+        static throwOfficeError(error: any): void;
+        static ensureExpectedFailureAndPassOrFail(e: Error, expectedErrorCode: string): void;
+        static ensureExpectedFailureAndThrowIfUnexpected(e: Error, expected: {
+            code: string;
+            location?: string;
+        }): void;
+        static expectException(func: () => void): void;
+    }
+    interface RestRequestInfo {
+        method?: string;
+        url: string;
+        body?: string;
+        headers?: {
+            [headerName: string]: string;
+        };
+    }
+    interface RestResponseInfo {
+        statusCode: number;
+        headers: {
+            [headerName: string]: string;
+        };
+        body: string;
+    }
+    class RestUtility {
+        static httpStatusOK: number;
+        static httpStatusCreated: number;
+        static httpStatusNoContent: number;
+        static httpStatusBadRequest: number;
+        static httpStatusNotFound: number;
+        static httpStatusMethodNotAllowed: number;
+        static httpMethodGet: string;
+        static httpMethodPost: string;
+        static httpMethodPatch: string;
+        static httpMethodDelete: string;
+        static getBaseUrlUsingOverride(defaultBaseUrl: string): string;
+        static updateRequestHeaders(headers: {
+            [name: string]: string;
+        }): void;
+        static getRequestUrlAndHeaderInfo(defaultBaseUrl: string): any;
+        static isSingleSignonSwapRequest(url: string): boolean;
+        static updateRequestInfoUsingProxyIfNecessary(request: RestRequestInfo): void;
+        static invoke(request: RestRequestInfo): OfficeExtension.IPromise<RestResponseInfo>;
+        static verifyStatusCodeThrow(respInfo: RestResponseInfo, expectedCode?: number): void;
+        static verifyStatusCode(respInfo: RestResponseInfo, expectedCode?: number): boolean;
+        private static logRestResponse(respInfo);
+        private static parseHeaders(allResponseHeaders);
+    }
+    class SSOUtility {
+        static getSSORequestInfo(accessToken: string): RichApiTest.RestRequestInfo;
+    }
+}
+declare namespace MonacoEditorIntegration {
+    var textAreaId: string;
+    function initializeJsEditor(textAreaId: string, intellisensePaths: string[]): void;
+    function exposeGlobalVariables(keysToExpose: Array<string>, testNs: string): void;
+    function getEditorValue(): string;
+    function setEditorValue(text: string): void;
+    function resizeEditor(scrollUp?: boolean): void;
+}

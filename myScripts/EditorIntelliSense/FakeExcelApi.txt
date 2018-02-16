@@ -1,0 +1,1891 @@
+declare namespace FakeExcelApi {
+    namespace TestPageElementIds {
+        var BtnEventSelectionChanged: string;
+        var TxtEventSelectionChanged: string;
+        var BtnEventSheetPrefix: string;
+        var RichApiWacFrame: string;
+        var RichApiWacFrameContainer: string;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class HiRange extends OfficeExtension.ClientObject {
+        private m_text;
+        text: string;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+    }
+    class InProcRequestExecutor implements OfficeExtension.IRequestExecutor {
+        executeAsync(customData: string, requestFlags: number, requestMessage: OfficeExtension.IRequestExecutorRequestMessage): OfficeExtension.IPromise<OfficeExtension.IRequestExecutorResponseMessage>;
+    }
+    function inProcSendLocalDocumentRequest(request: OfficeExtension.HttpRequestInfo): OfficeExtension.IPromise<OfficeExtension.HttpResponseInfo>;
+    class Session extends OfficeExtension.SessionBase {
+        private m_url;
+        constructor(url?: string);
+        _resolveRequestUrlAndHeaderInfo(): OfficeExtension.IPromise<OfficeExtension.RequestUrlAndHeaderInfo>;
+    }
+    class ExcelClientRequestContext extends OfficeExtension.ClientRequestContext {
+        private m_application;
+        constructor(url?: string | OfficeExtension.RequestUrlAndHeaderInfo | OfficeExtension.SessionBase);
+        readonly application: Application;
+    }
+    /**
+     * Executes a batch script that performs actions on the Excel object model, using a new request context. When the promise is resolved, any tracked objects that were automatically allocated during execution will be released.
+     * @param batch - A function that takes in an Excel.RequestContext and returns a promise (typically, just the result of "context.sync()"). The context parameter facilitates requests to the Excel application. Since the Office add-in and the Excel application run in two different processes, the request context is required to get access to the Excel object model from the add-in.
+     */
+    function run<T>(batch: (context: FakeExcelApi.ExcelClientRequestContext) => OfficeExtension.IPromise<T>): OfficeExtension.IPromise<T>;
+    /**
+     * Executes a batch script that performs actions on the Excel object model, using the request context of a previously-created API object.
+     * @param object - A previously-created API object. The batch will use the same request context as the passed-in object, which means that any changes applied to the object will be picked up by "context.sync()".
+     * @param batch - A function that takes in an Excel.RequestContext and returns a promise (typically, just the result of "context.sync()"). When the promise is resolved, any tracked objects that were automatically allocated during execution will be released.
+     */
+    function run<T>(object: OfficeExtension.ClientObject, batch: (context: FakeExcelApi.ExcelClientRequestContext) => OfficeExtension.IPromise<T>): OfficeExtension.IPromise<T>;
+    /**
+     * Executes a batch script that performs actions on the Excel object model, using the request context of previously-created API objects.
+     * @param object - An array of previously-created API objects. The array will be validated to make sure that all of the objects share the same context. The batch will use this shared request context, which means that any changes applied to these objects will be picked up by "context.sync()".
+     * @param batch - A function that takes in an Excel.RequestContext and returns a promise (typically, just the result of "context.sync()"). When the promise is resolved, any tracked objects that were automatically allocated during execution will be released.
+     */
+    function run<T>(objects: OfficeExtension.ClientObject[], batch: (context: FakeExcelApi.ExcelClientRequestContext) => OfficeExtension.IPromise<T>): OfficeExtension.IPromise<T>;
+    function run<T>(session: OfficeExtension.SessionBase, batch: (context: FakeExcelApi.ExcelClientRequestContext) => OfficeExtension.IPromise<T>): OfficeExtension.IPromise<T>;
+    function BatchFunction<T>(batchable: (application: FakeExcelApi.Application, context: FakeExcelApi.ExcelClientRequestContext) => Promise<T>): Promise<T>;
+    function BatchFunction<T>(batchable: (application: FakeExcelApi.Application, context: FakeExcelApi.ExcelClientRequestContext) => T): Promise<T>;
+    function BatchFunction(batchable: (application: FakeExcelApi.Application, context: FakeExcelApi.ExcelClientRequestContext) => void): Promise<void>;
+    function runBatch<T>(runnable: (batch: typeof BatchFunction) => Promise<T>): Promise<T>;
+    function runBatch<T>(runnable: (batch: typeof BatchFunction) => T): Promise<T>;
+    let SheetDataChangedEventId: number;
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    const enum ExcelEventType {
+        none = 0,
+        worksheetServerDataChanged = 1,
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    const enum ExcelMessageCategory {
+        none = 0,
+        udf = 1,
+        event = 65536,
+    }
+    /**
+     *
+     * Chart type
+     *
+     * [Api set: FakeExcelApi 1.1]
+     */
+    namespace ChartType {
+        /**
+         *
+         * Not specified
+         *
+         */
+        var none: string;
+        /**
+         *
+         * Pie chart
+         *
+         */
+        var pie: string;
+        /**
+         *
+         * Bar chart
+         *
+         */
+        var bar: string;
+        /**
+         *
+         * Line chart
+         *
+         */
+        var line: string;
+        /**
+         *
+         * 3D chart
+         *
+         */
+        var _3DBar: string;
+        /**
+         *
+         * Obsolete chart
+         *
+         * @deprecated Use bar instead
+         */
+        var obsoleteChart: string;
+        /**
+         *
+         * @deprecated Use line instead
+         */
+        var obsoleteChartWithoutComment: string;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    namespace RangeValueType {
+        var unknown: string;
+        var empty: string;
+        var string: string;
+        var integer: string;
+        var double: string;
+        var boolean: string;
+        var error: string;
+    }
+    /**
+     *
+     * Numeric chart type
+     *
+     * [Api set: FakeExcelApi 1.1]
+     */
+    const enum NumericChartType {
+        /**
+         *
+         * Not specified
+         *
+         */
+        none = 0,
+        /**
+         *
+         * Pie chart
+         *
+         */
+        pie = 1,
+        /**
+         *
+         * Bar chart
+         *
+         */
+        bar = 2,
+        /**
+         *
+         * Line chart
+         *
+         */
+        line = 3,
+        /**
+         *
+         * 3D chart
+         *
+         */
+        _3DBar = 4,
+    }
+    /**
+     * [Api set: FakeExcelApi 1.8 for Local, Remote]
+     */
+    namespace EventSource {
+        /**
+         *
+         * Local means event comes from local user session.
+         *
+         */
+        var local: string;
+        /**
+         *
+         * Remote means event comes from remote user session.
+         *
+         */
+        var remote: string;
+    }
+    /**
+     * [Api set: SomeOtherApiSet 1.1]
+     */
+    class Application extends OfficeExtension.ClientObject {
+        private _A;
+        private _H;
+        private _R;
+        private _T;
+        private _Te;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _navigationPropertyNames: string[];
+        readonly activeWorkbook: FakeExcelApi.Workbook;
+        readonly restrictedWorkbook: FakeExcelApi.Workbook;
+        readonly testCaseObject: FakeExcelApi.TestCaseObject;
+        readonly testWorkbook: FakeExcelApi.TestWorkbook;
+        readonly hasBase: boolean;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.ApplicationUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: Application): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.ApplicationUpdateData): void;
+        restrictedMethod(): OfficeExtension.ClientResult<string>;
+        triggerEvent(eventId: number, targetId: string, data: string): void;
+        _GetObjectByReferenceId(referenceId: string): OfficeExtension.ClientResult<any>;
+        _GetObjectTypeNameByReferenceId(referenceId: string): OfficeExtension.ClientResult<string>;
+        _RemoveReference(referenceId: string): void;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.ApplicationLoadOptions): FakeExcelApi.Application;
+        load(option?: string | string[]): FakeExcelApi.Application;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Application;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.ApplicationLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Application, FakeExcelApi.Interfaces.ApplicationData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Application, FakeExcelApi.Interfaces.ApplicationData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Application, FakeExcelApi.Interfaces.ApplicationData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.ApplicationData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.ApplicationData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.1]
+     */
+    class Chart extends OfficeExtension.ClientObject {
+        private _C;
+        private _I;
+        private _Im;
+        private _N;
+        private _Nu;
+        private _Nul;
+        private _T;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _scalarPropertyUpdateable: boolean[];
+        chartType: string;
+        readonly id: number;
+        readonly imageData: string;
+        readonly name: string;
+        nullableChartType: string;
+        nullableShowLabel: boolean;
+        title: string;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.ChartUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: Chart): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.ChartUpdateData): void;
+        /**
+         *
+         * Delete the chart
+         *
+         * [Api set: FakeExcelApi 1.1]
+         */
+        delete(): void;
+        getAsImage(large: boolean): OfficeExtension.ClientResult<string>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.ChartLoadOptions): FakeExcelApi.Chart;
+        load(option?: string | string[]): FakeExcelApi.Chart;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Chart;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.ChartLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Chart, FakeExcelApi.Interfaces.ChartData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Chart, FakeExcelApi.Interfaces.ChartData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Chart, FakeExcelApi.Interfaces.ChartData>;
+        /** Handle identity results returned from the document
+         * @private
+         */
+        _handleIdResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.ChartData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.ChartData): void;
+    }
+    /**
+     *
+     * Chart collection
+     *
+     * [Api set: FakeExcelApi]
+     */
+    class ChartCollection extends OfficeExtension.ClientObject {
+        private _C;
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        readonly _scalarPropertyNames: string[];
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.Chart>;
+        /**
+         *
+         * Gets the number of charts
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly count: number;
+        /**
+         *
+         * Add a new chart to the collection
+         *
+         * [Api set: FakeExcelApi]
+         *
+         * @param name The name of the chart to be added
+         * @param chartType The type of the chart to be added
+         * @returns The newly added chart
+         */
+        add(name: string, chartType: string): FakeExcelApi.Chart;
+        /**
+         *
+         * Get the chart at the index
+         *
+         * [Api set: FakeExcelApi]
+         *
+         * @param index The index
+         * @returns The chart at the index
+         */
+        getItem(index: any): FakeExcelApi.Chart;
+        /**
+         *
+         * Get the chart at the position
+         *
+         * [Api set: FakeExcelApi]
+         *
+         * @param ordinal The position
+         * @returns The chart at the position
+         */
+        getItemAt(ordinal: number): FakeExcelApi.Chart;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.ChartCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.ChartCollection;
+        load(option?: string | string[]): FakeExcelApi.ChartCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.ChartCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.ChartCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.ChartCollection, FakeExcelApi.Interfaces.ChartCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.ChartCollection, FakeExcelApi.Interfaces.ChartCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.ChartCollection, FakeExcelApi.Interfaces.ChartCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.ChartCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    namespace ErrorMethodType {
+        var none: string;
+        var accessDenied: string;
+        var stateChanged: string;
+        var bounds: string;
+        var abort: string;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class TestWorkbook extends OfficeExtension.ClientObject {
+        private _C;
+        private _E;
+        private _Er;
+        private _N;
+        private m_sectionGroups;
+        private m_sections;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _scalarPropertyUpdateable: boolean[];
+        readonly _navigationPropertyNames: string[];
+        /**
+         *
+         * When this property is accessed, the server will return errorCode E_CHANGED_STATE
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly errorWorksheet: FakeExcelApi.Worksheet;
+        /**
+         *
+         * When this property is accessed, the server will return errorCode
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly errorWorksheet2: FakeExcelApi.Worksheet;
+        readonly sectionGroups: FakeExcelApi.SectionGroupCollection;
+        readonly sections: FakeExcelApi.SectionCollection;
+        created: Date;
+        nullableCreated: Date;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.TestWorkbookUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: TestWorkbook): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.TestWorkbookUpdateData): void;
+        /**
+         *
+         * When this method is invoked, the server will return errorCode. The errorCode is dependent on the ErrorMethodType input.
+         *
+         * [Api set: FakeExcelApi]
+         *
+         * @param input
+         * @returns
+         */
+        errorMethod(input: string): OfficeExtension.ClientResult<string>;
+        /**
+         *
+         * When this method is invoked, the server will return errorCode. The errorCode is dependent on the ErrorMethodType input.
+         *
+         * [Api set: FakeExcelApi]
+         *
+         * @param input
+         * @returns
+         */
+        errorMethod2(input: string): OfficeExtension.ClientResult<string>;
+        getActiveWorksheet(): FakeExcelApi.Worksheet;
+        /**
+         *
+         * Get the total count of active cached range data objects
+         *
+         * [Api set: FakeExcelApi]
+         * @returns
+         */
+        getCachedObjectCount(): OfficeExtension.ClientResult<number>;
+        getNullableBoolValue(nullable: boolean): OfficeExtension.ClientResult<boolean>;
+        getNullableEnumValue(nullable: boolean): OfficeExtension.ClientResult<string>;
+        /**
+         *
+         * Get the total count of active COM objects
+         *
+         * [Api set: FakeExcelApi]
+         * @returns
+         */
+        getObjectCount(): OfficeExtension.ClientResult<number>;
+        getScopedSections(ns: string): FakeExcelApi.SectionCollection;
+        testNullableInputValue(chartType: string, boolValue: boolean): OfficeExtension.ClientResult<string>;
+        testParamNameValueDict(value: any): OfficeExtension.ClientResult<string>;
+        testParamObject(value: any): OfficeExtension.ClientResult<any>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.TestWorkbookLoadOptions): FakeExcelApi.TestWorkbook;
+        load(option?: string | string[]): FakeExcelApi.TestWorkbook;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.TestWorkbook;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.TestWorkbookLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.TestWorkbook, FakeExcelApi.Interfaces.TestWorkbookData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.TestWorkbook, FakeExcelApi.Interfaces.TestWorkbookData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.TestWorkbook, FakeExcelApi.Interfaces.TestWorkbookData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.TestWorkbookData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.TestWorkbookData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    interface WorkbookSelectionChangedEventArgs {
+        selectedSheet: FakeExcelApi.Worksheet;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    interface WorksheetDataChangedEventArgs {
+        address: string;
+        newValue: any;
+        oldValue: any;
+        worksheet: FakeExcelApi.Worksheet;
+        source: string;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    interface SessionWorksheetDataChangedEventArgs {
+        address: string;
+        newValue: any;
+        worksheet: FakeExcelApi.Worksheet;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.1]
+     */
+    class Workbook extends OfficeExtension.ClientObject {
+        private _A;
+        private _C;
+        private _S;
+        private m_selectionChanged;
+        private m_selectionChangedErrorInRegistration;
+        private m_selectionChangedErrorInUnregistration;
+        readonly _className: string;
+        readonly _navigationPropertyNames: string[];
+        private m_hiRangeProp;
+        private m_hiStringProp;
+        readonly hiRangeProp: FakeExcelApi.HiRange;
+        hiStringProp: string;
+        hiStringMethod(value: string): OfficeExtension.ClientResult<string>;
+        hiRangeMethod(value: string): FakeExcelApi.HiRange;
+        readonly activeWorksheet: FakeExcelApi.Worksheet;
+        readonly charts: FakeExcelApi.ChartCollection;
+        readonly sheets: FakeExcelApi.WorksheetCollection;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.WorkbookUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: Workbook): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.WorkbookUpdateData): void;
+        addChart(name: string, chartType: string): FakeExcelApi.Chart;
+        getChartByType(chartType: string): FakeExcelApi.Chart;
+        getChartByTypeTitle(chartType: string, title: string): FakeExcelApi.Chart;
+        someAction(intVal: number, strVal: string, enumVal: string): OfficeExtension.ClientResult<string>;
+        _GetChartById(id: number): FakeExcelApi.Chart;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.WorkbookLoadOptions): FakeExcelApi.Workbook;
+        load(option?: string | string[]): FakeExcelApi.Workbook;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Workbook;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.WorkbookLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Workbook, FakeExcelApi.Interfaces.WorkbookData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Workbook, FakeExcelApi.Interfaces.WorkbookData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Workbook, FakeExcelApi.Interfaces.WorkbookData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        /**
+         *
+         * Event that occurs when selection is changed.
+         *
+         * [Api set: FakeExcelApi 1.1]
+         */
+        readonly onSelectionChanged: OfficeExtension.EventHandlers<FakeExcelApi.WorkbookSelectionChangedEventArgs>;
+        /**
+         *
+         * Event that occurs when selection is changed. Error in registration
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly onSelectionChangedErrorInRegistration: OfficeExtension.EventHandlers<FakeExcelApi.WorkbookSelectionChangedEventArgs>;
+        /**
+         *
+         * Event that occurs when selection is changed. Error in unregistration
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly onSelectionChangedErrorInUnregistration: OfficeExtension.EventHandlers<FakeExcelApi.WorkbookSelectionChangedEventArgs>;
+        toJSON(): FakeExcelApi.Interfaces.WorkbookData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.WorkbookData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.1]
+     */
+    class Worksheet extends OfficeExtension.ClientObject {
+        private _C;
+        private _E;
+        private _N;
+        private _R;
+        private _Ra;
+        private _Ran;
+        private _Ro;
+        private __I;
+        private m_dataChanged;
+        private m_serverDataChanged;
+        private m_sessionDataChanged;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _scalarPropertyUpdateable: boolean[];
+        readonly _navigationPropertyNames: string[];
+        private m_hiRangeProp;
+        readonly hiRangeProp: FakeExcelApi.HiRange;
+        readonly errorRangeProp: FakeExcelApi.ErrorRange;
+        readonly rangeProp: FakeExcelApi.Range;
+        readonly rangePropOrNull: FakeExcelApi.Range;
+        readonly ranges: FakeExcelApi.RangeCollection;
+        readonly rows: FakeExcelApi.RowCollection;
+        calculatedName: string;
+        readonly name: string;
+        readonly _Id: number;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.WorksheetUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: Worksheet): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.WorksheetUpdateData): void;
+        getActiveCell(): FakeExcelApi.Range;
+        getActiveCellInvalidAfterRequest(): FakeExcelApi.Range;
+        getErrorRangeMethod(): FakeExcelApi.ErrorRange;
+        nullChart(address: string): FakeExcelApi.Chart;
+        nullRange(address: string): FakeExcelApi.Range;
+        range(address: string): FakeExcelApi.Range;
+        someRangeOperation(input: string, range: FakeExcelApi.Range): OfficeExtension.ClientResult<string>;
+        _RegisterServerDataChanged(): void;
+        _RestOnly(): OfficeExtension.ClientResult<string>;
+        _UnregisterServerDataChanged(): void;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.WorksheetLoadOptions): FakeExcelApi.Worksheet;
+        load(option?: string | string[]): FakeExcelApi.Worksheet;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Worksheet;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.WorksheetLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Worksheet, FakeExcelApi.Interfaces.WorksheetData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Worksheet, FakeExcelApi.Interfaces.WorksheetData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Worksheet, FakeExcelApi.Interfaces.WorksheetData>;
+        /** Handle identity results returned from the document
+         * @private
+         */
+        _handleIdResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        /**
+         *
+         * Event occurs when data is changed.
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly onDataChanged: OfficeExtension.EventHandlers<FakeExcelApi.WorksheetDataChangedEventArgs>;
+        readonly onServerDataChanged: OfficeExtension.EventHandlers<FakeExcelApi.WorksheetDataChangedEventArgs>;
+        /**
+         *
+         * Event occurs when data is changed using SessionBase
+         *
+         * [Api set: FakeExcelApi]
+         */
+        readonly onSessionDataChanged: OfficeExtension.EventHandlers<FakeExcelApi.SessionWorksheetDataChangedEventArgs>;
+        toJSON(): FakeExcelApi.Interfaces.WorksheetData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.WorksheetData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class WorksheetCollection extends OfficeExtension.ClientObject {
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.Worksheet>;
+        add(name: string): FakeExcelApi.Worksheet;
+        findSheet(text: string): FakeExcelApi.Worksheet;
+        getActiveWorksheetInvalidAfterRequest(): FakeExcelApi.Worksheet;
+        getItem(index: any): FakeExcelApi.Worksheet;
+        _GetItem(index: any): FakeExcelApi.Worksheet;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.WorksheetCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.WorksheetCollection;
+        load(option?: string | string[]): FakeExcelApi.WorksheetCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.WorksheetCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.WorksheetCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.WorksheetCollection, FakeExcelApi.Interfaces.WorksheetCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.WorksheetCollection, FakeExcelApi.Interfaces.WorksheetCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.WorksheetCollection, FakeExcelApi.Interfaces.WorksheetCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.WorksheetCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.1]
+     */
+    class Range extends OfficeExtension.ClientObject {
+        private _C;
+        private _E;
+        private _L;
+        private _R;
+        private _S;
+        private _T;
+        private _Te;
+        private _V;
+        private _Va;
+        private _Val;
+        private _Valu;
+        private __R;
+        private _Ex;
+        private _Ext;
+        private _ExtP;
+        private _ExtPr;
+        private _ExtW;
+        private _P;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _scalarPropertyUpdateable: boolean[];
+        readonly _navigationPropertyNames: string[];
+        someCustomMethod(): void;
+        readonly sort: FakeExcelApi.RangeSort;
+        readonly parentSheet: FakeExcelApi.Worksheet;
+        readonly columnIndex: number;
+        readonly errorStringProp: string;
+        readonly logText: string;
+        readonly rowIndex: number;
+        text: string;
+        textArray: Array<Array<string>>;
+        value: any;
+        valueArray: Array<Array<any>>;
+        valueArray2: Array<string>;
+        readonly valueTypes: Array<Array<string>>;
+        readonly _ReferenceId: string;
+        readonly extErrorIntProp: number;
+        extProp: number;
+        extPropConvertValue: number;
+        extPropOneBasedValue: number;
+        extWidth: number;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.RangeUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: Range): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.RangeUpdateData): void;
+        activate(): void;
+        getValueArray2(): OfficeExtension.ClientResult<Array<string>>;
+        notRestMethod(): OfficeExtension.ClientResult<number>;
+        replaceValue(newValue: any): OfficeExtension.ClientResult<any>;
+        setValueArray2(valueArray: Array<string>, text: string): void;
+        _KeepReference(): void;
+        createPivotTable(): FakeExcelApi.PivotTable;
+        extMethod(): OfficeExtension.ClientResult<number>;
+        extMethodInputConvertValue(input: number): OfficeExtension.ClientResult<number>;
+        extMethodOneBasedInputObjectValue(input: any): OfficeExtension.ClientResult<number>;
+        extMethodOneBasedInputValue(input: number): OfficeExtension.ClientResult<number>;
+        extMethodOneBasedReturnValue(): OfficeExtension.ClientResult<number>;
+        extMethodReturnConvertValue(): OfficeExtension.ClientResult<number>;
+        extResize(width: number): OfficeExtension.ClientResult<number>;
+        isMissing(a: number, input: any): OfficeExtension.ClientResult<boolean>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.RangeLoadOptions): FakeExcelApi.Range;
+        load(option?: string | string[]): FakeExcelApi.Range;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Range;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.RangeLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Range, FakeExcelApi.Interfaces.RangeData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Range, FakeExcelApi.Interfaces.RangeData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Range, FakeExcelApi.Interfaces.RangeData>;
+        /** Handle identity results returned from the document
+         * @private
+         */
+        _handleIdResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        /**
+         * Track the object for automatic adjustment based on surrounding changes in the document. This call is a shorthand for context.trackedObjects.add(thisObject). If you are using this object across ".sync" calls and outside the sequential execution of a ".run" batch, and get an "InvalidObjectPath" error when setting a property or invoking a method on the object, you needed to have added the object to the tracked object collection when the object was first created.
+         */
+        track(): FakeExcelApi.Range;
+        /**
+         * Release the memory associated with this object, if it has previously been tracked. This call is shorthand for context.trackedObjects.remove(thisObject). Having many tracked objects slows down the host application, so please remember to free any objects you add, once you're done using them. You will need to call "context.sync()" before the memory release takes effect.
+         */
+        untrack(): FakeExcelApi.Range;
+        toJSON(): FakeExcelApi.Interfaces.RangeData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.RangeData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class RangeCollection extends OfficeExtension.ClientObject {
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.Range>;
+        getCount(): OfficeExtension.ClientResult<number>;
+        getItemAt(index: number): FakeExcelApi.Range;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.RangeCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.RangeCollection;
+        load(option?: string | string[]): FakeExcelApi.RangeCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.RangeCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.RangeCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.RangeCollection, FakeExcelApi.Interfaces.RangeCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.RangeCollection, FakeExcelApi.Interfaces.RangeCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.RangeCollection, FakeExcelApi.Interfaces.RangeCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.RangeCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class ErrorRange extends OfficeExtension.ClientObject {
+        private _E;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly errorProp: number;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.ErrorRangeLoadOptions): FakeExcelApi.ErrorRange;
+        load(option?: string | string[]): FakeExcelApi.ErrorRange;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.ErrorRange;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.ErrorRangeLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.ErrorRange, FakeExcelApi.Interfaces.ErrorRangeData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.ErrorRange, FakeExcelApi.Interfaces.ErrorRangeData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.ErrorRange, FakeExcelApi.Interfaces.ErrorRangeData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.ErrorRangeData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.ErrorRangeData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class TestCaseObject extends OfficeExtension.ClientObject {
+        readonly _className: string;
+        testFourParamsOldJsMissingLastOne(a: string, b: number, c: boolean): OfficeExtension.ClientResult<string>;
+        testFourParamsNewJsAddingOneMore(a: string, b: number, c: boolean, d: string, e: Range): OfficeExtension.ClientResult<string>;
+        calculateAddressAndSaveToRange(street: string, city: string, range: FakeExcelApi.Range): OfficeExtension.ClientResult<string>;
+        getNullableDateTimeValue(nullable: boolean): OfficeExtension.ClientResult<Date>;
+        matrixSum(matrix: Array<Array<any>>): OfficeExtension.ClientResult<number>;
+        sum(...values: Array<any>): OfficeExtension.ClientResult<number>;
+        test2DArray(): OfficeExtension.ClientResult<any>;
+        testAsyncMethod(wait: number): OfficeExtension.ClientResult<string>;
+        testEnum2DArray(values: Array<Array<string>>): OfficeExtension.ClientResult<Array<Array<string>>>;
+        testEnumArray(values: Array<string>): OfficeExtension.ClientResult<Array<string>>;
+        testFourParams(a: string, b: number, c: boolean, d: string): OfficeExtension.ClientResult<string>;
+        testJsonParse(value: string): OfficeExtension.ClientResult<any>;
+        testJsonStringify(value: any): OfficeExtension.ClientResult<string>;
+        testJsonStringifyStructSortField(): OfficeExtension.ClientResult<string>;
+        testNumericEnumValue(chartType: FakeExcelApi.NumericChartType): OfficeExtension.ClientResult<FakeExcelApi.NumericChartType>;
+        testParamBool(value: boolean): OfficeExtension.ClientResult<boolean>;
+        testParamDateTime(value: Date): OfficeExtension.ClientResult<Date>;
+        testParamDateTimeArray(value: Array<Date>): OfficeExtension.ClientResult<Array<Date>>;
+        testParamDouble(value: number): OfficeExtension.ClientResult<number>;
+        testParamFloat(value: number): OfficeExtension.ClientResult<number>;
+        testParamInt(value?: number): OfficeExtension.ClientResult<number>;
+        testParamNullableDateTime(value: Date): OfficeExtension.ClientResult<Date>;
+        testParamRange(value: FakeExcelApi.Range): FakeExcelApi.Range;
+        testParamString(value?: string): OfficeExtension.ClientResult<string>;
+        testUrlKeyValueDecode(value: string): OfficeExtension.ClientResult<string>;
+        testUrlPathEncode(value: string): OfficeExtension.ClientResult<string>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        /**
+         * Create a new instance of FakeExcelApi.TestCaseObject object
+         */
+        static newObject(context: OfficeExtension.ClientRequestContext): FakeExcelApi.TestCaseObject;
+        toJSON(): {
+            [key: string]: string;
+        };
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class RangeSort extends OfficeExtension.ClientObject {
+        private _F;
+        private _Fi;
+        private _Q;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _scalarPropertyUpdateable: boolean[];
+        readonly fields: Array<FakeExcelApi.SortField>;
+        fields2: Array<any>;
+        readonly queryField: FakeExcelApi.QueryWithSortField;
+        /** Sets multiple properties on the object at the same time, based on JSON input. */
+        set(properties: Interfaces.RangeSortUpdateData, options?: {
+            /**
+             * Throw an error if the passed-in property list includes read-only properties (default = true).
+             */
+            throwOnReadOnly?: boolean;
+        }): void;
+        /** Sets multiple properties on the object at the same time, based on an existing loaded object. */
+        set(properties: RangeSort): void;
+        /** Update multiple properties on the object at the same time, based on JSON input. */
+        update(properties: Interfaces.RangeSortUpdateData): void;
+        apply(fields: Array<FakeExcelApi.SortField>): OfficeExtension.ClientResult<string>;
+        applyAndReturnFirstField(fields: Array<FakeExcelApi.SortField>): OfficeExtension.ClientResult<FakeExcelApi.SortField>;
+        applyMixed(fields: Array<any>): OfficeExtension.ClientResult<number>;
+        applyQueryWithSortFieldAndReturnLast(fields: Array<FakeExcelApi.QueryWithSortField>): OfficeExtension.ClientResult<FakeExcelApi.QueryWithSortField>;
+        getFirstField(fields: Array<FakeExcelApi.SortField>): OfficeExtension.ClientResult<FakeExcelApi.SortField>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.RangeSortLoadOptions): FakeExcelApi.RangeSort;
+        load(option?: string | string[]): FakeExcelApi.RangeSort;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.RangeSort;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.RangeSortLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.RangeSort, FakeExcelApi.Interfaces.RangeSortData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.RangeSort, FakeExcelApi.Interfaces.RangeSortData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.RangeSort, FakeExcelApi.Interfaces.RangeSortData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.RangeSortData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.RangeSortData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    interface SortField {
+        assending: boolean;
+        columnIndex: number;
+        useCurrentCulture?: boolean;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.2]
+     */
+    interface QueryWithSortField {
+        exps: Array<string>;
+        field: FakeExcelApi.SortField;
+        name: string;
+        rowLimit: number;
+    }
+    /**
+     *
+     * A row class without Id property. It's to test the case when there is no Id property.
+     *
+     * [Api set: FakeExcelApi 1.3]
+     */
+    class Row extends OfficeExtension.ClientObject {
+        private _I;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly index: number;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.RowLoadOptions): FakeExcelApi.Row;
+        load(option?: string | string[]): FakeExcelApi.Row;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Row;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.RowLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Row, FakeExcelApi.Interfaces.RowData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Row, FakeExcelApi.Interfaces.RowData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Row, FakeExcelApi.Interfaces.RowData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.RowData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.RowData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi 1.3]
+     */
+    class RowCollection extends OfficeExtension.ClientObject {
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.Row>;
+        getCount(): OfficeExtension.ClientResult<number>;
+        getItemAt(index: number): FakeExcelApi.Row;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.RowCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.RowCollection;
+        load(option?: string | string[]): FakeExcelApi.RowCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.RowCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.RowCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.RowCollection, FakeExcelApi.Interfaces.RowCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.RowCollection, FakeExcelApi.Interfaces.RowCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.RowCollection, FakeExcelApi.Interfaces.RowCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.RowCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class SectionGroup extends OfficeExtension.ClientObject {
+        private _I;
+        private m_sectionGroups;
+        private m_sections;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _navigationPropertyNames: string[];
+        readonly sectionGroups: FakeExcelApi.SectionGroupCollection;
+        readonly sections: FakeExcelApi.SectionCollection;
+        readonly id: number;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.SectionGroupLoadOptions): FakeExcelApi.SectionGroup;
+        load(option?: string | string[]): FakeExcelApi.SectionGroup;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.SectionGroup;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.SectionGroupLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroup, FakeExcelApi.Interfaces.SectionGroupData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroup, FakeExcelApi.Interfaces.SectionGroupData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroup, FakeExcelApi.Interfaces.SectionGroupData>;
+        /** Handle identity results returned from the document
+         * @private
+         */
+        _handleIdResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.SectionGroupData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.SectionGroupData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class SectionGroupCollection extends OfficeExtension.ClientObject {
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.SectionGroup>;
+        getCount(): OfficeExtension.ClientResult<number>;
+        getItem(id: number): FakeExcelApi.SectionGroup;
+        getItemAt(index: number): FakeExcelApi.SectionGroup;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.SectionGroupCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.SectionGroupCollection;
+        load(option?: string | string[]): FakeExcelApi.SectionGroupCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.SectionGroupCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.SectionGroupCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroupCollection, FakeExcelApi.Interfaces.SectionGroupCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroupCollection, FakeExcelApi.Interfaces.SectionGroupCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.SectionGroupCollection, FakeExcelApi.Interfaces.SectionGroupCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.SectionGroupCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class Section extends OfficeExtension.ClientObject {
+        private _C;
+        private _I;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly _navigationPropertyNames: string[];
+        readonly charts: FakeExcelApi.ChartCollection;
+        readonly id: number;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.SectionLoadOptions): FakeExcelApi.Section;
+        load(option?: string | string[]): FakeExcelApi.Section;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.Section;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.SectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.Section, FakeExcelApi.Interfaces.SectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.Section, FakeExcelApi.Interfaces.SectionData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.Section, FakeExcelApi.Interfaces.SectionData>;
+        /** Handle identity results returned from the document
+         * @private
+         */
+        _handleIdResult(value: any): void;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.SectionData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.SectionData): void;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class SectionCollection extends OfficeExtension.ClientObject {
+        private m__items;
+        readonly _className: string;
+        readonly _isCollection: boolean;
+        /** Gets the loaded child items in this collection. */
+        readonly items: Array<FakeExcelApi.Section>;
+        getItem(id: number): FakeExcelApi.Section;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.SectionCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): FakeExcelApi.SectionCollection;
+        load(option?: string | string[]): FakeExcelApi.SectionCollection;
+        load(option?: OfficeExtension.LoadOption): FakeExcelApi.SectionCollection;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.SectionCollectionLoadOptions & FakeExcelApi.Interfaces.CollectionLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.SectionCollection, FakeExcelApi.Interfaces.SectionCollectionData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.SectionCollection, FakeExcelApi.Interfaces.SectionCollectionData>;
+        retrieve(option?: OfficeExtension.LoadOption): OfficeExtension.RetrieveResult<FakeExcelApi.SectionCollection, FakeExcelApi.Interfaces.SectionCollectionData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.SectionCollectionData;
+    }
+    /**
+     * [Api set: FakeExcelApi]
+     */
+    class PivotTable extends OfficeExtension.ClientObject {
+        private _N;
+        readonly _className: string;
+        readonly _scalarPropertyNames: string[];
+        readonly name: string;
+        refresh(): OfficeExtension.ClientResult<string>;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        /**
+         * Queues up a command to load the specified properties of the object. You must call "context.sync()" before reading the properties.
+         */
+        load(option?: FakeExcelApi.Interfaces.PivotTableLoadOptions): FakeExcelApi.PivotTable;
+        load(option?: string | string[]): FakeExcelApi.PivotTable;
+        load(option?: {
+            select?: string;
+            expand?: string;
+        }): FakeExcelApi.PivotTable;
+        /**
+         * Creates a command to retrieve the specified properties of the object. You must call "context.sync()" before reading "result.data".
+         */
+        retrieve(option?: FakeExcelApi.Interfaces.PivotTableLoadOptions): OfficeExtension.RetrieveResult<FakeExcelApi.PivotTable, FakeExcelApi.Interfaces.PivotTableData>;
+        retrieve(option?: string | string[]): OfficeExtension.RetrieveResult<FakeExcelApi.PivotTable, FakeExcelApi.Interfaces.PivotTableData>;
+        retrieve(option?: {
+            select?: string;
+            expand?: string;
+        }): OfficeExtension.RetrieveResult<FakeExcelApi.PivotTable, FakeExcelApi.Interfaces.PivotTableData>;
+        /** Handle retrieve results
+         * @private
+         */
+        _handleRetrieveResult(value: any, result: any): void;
+        toJSON(): FakeExcelApi.Interfaces.PivotTableData;
+        /**
+         * Queues up a command to ensure the object's state is not changed.
+         */
+        ensureUnchanged(data: FakeExcelApi.Interfaces.PivotTableData): void;
+    }
+    namespace ErrorCodes {
+        var aborted2: string;
+        var accessDenied: string;
+        var accessDenied2: string;
+        var apiNotFound: string;
+        var conflict: string;
+        var conflict2: string;
+        var generalException: string;
+        var invalidArgument: string;
+        var outOfRange: string;
+    }
+    module Interfaces {
+        interface CollectionLoadOptions {
+            $top?: number;
+            $skip?: number;
+        }
+        /** An interface for updating data on the Application object, for use in "application.set({ ... })". */
+        interface ApplicationUpdateData {
+            activeWorkbook?: FakeExcelApi.Interfaces.WorkbookUpdateData;
+        }
+        /** An interface for updating data on the Chart object, for use in "chart.set({ ... })". */
+        interface ChartUpdateData {
+            chartType?: string;
+            nullableChartType?: string;
+            nullableShowLabel?: boolean;
+            title?: string;
+        }
+        /** An interface for updating data on the ChartCollection object, for use in "chartCollection.set({ ... })". */
+        interface ChartCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.ChartData[];
+        }
+        /** An interface for updating data on the TestWorkbook object, for use in "testWorkbook.set({ ... })". */
+        interface TestWorkbookUpdateData {
+            created?: Date;
+            nullableCreated?: Date;
+        }
+        /** An interface for updating data on the Workbook object, for use in "workbook.set({ ... })". */
+        interface WorkbookUpdateData {
+            activeWorksheet?: FakeExcelApi.Interfaces.WorksheetUpdateData;
+        }
+        /** An interface for updating data on the Worksheet object, for use in "worksheet.set({ ... })". */
+        interface WorksheetUpdateData {
+            calculatedName?: string;
+        }
+        /** An interface for updating data on the WorksheetCollection object, for use in "worksheetCollection.set({ ... })". */
+        interface WorksheetCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.WorksheetData[];
+        }
+        /** An interface for updating data on the Range object, for use in "range.set({ ... })". */
+        interface RangeUpdateData {
+            sort?: FakeExcelApi.Interfaces.RangeSortUpdateData;
+            text?: string;
+            textArray?: Array<Array<string>>;
+            value?: any;
+            valueArray?: Array<Array<any>>;
+            valueArray2?: Array<string>;
+            extProp?: number;
+            extPropConvertValue?: number;
+            extPropOneBasedValue?: number;
+            extWidth?: number;
+        }
+        /** An interface for updating data on the RangeCollection object, for use in "rangeCollection.set({ ... })". */
+        interface RangeCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.RangeData[];
+        }
+        /** An interface for updating data on the RangeSort object, for use in "rangeSort.set({ ... })". */
+        interface RangeSortUpdateData {
+            fields2?: Array<any>;
+        }
+        /** An interface for updating data on the RowCollection object, for use in "rowCollection.set({ ... })". */
+        interface RowCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.RowData[];
+        }
+        /** An interface for updating data on the SectionGroupCollection object, for use in "sectionGroupCollection.set({ ... })". */
+        interface SectionGroupCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.SectionGroupData[];
+        }
+        /** An interface for updating data on the SectionCollection object, for use in "sectionCollection.set({ ... })". */
+        interface SectionCollectionUpdateData {
+            items?: FakeExcelApi.Interfaces.SectionData[];
+        }
+        /** An interface describing the data returned by calling "application.toJSON()". */
+        interface ApplicationData {
+            activeWorkbook?: FakeExcelApi.Interfaces.WorkbookData;
+            restrictedWorkbook?: FakeExcelApi.Interfaces.WorkbookData;
+            testWorkbook?: FakeExcelApi.Interfaces.TestWorkbookData;
+            hasBase?: boolean;
+        }
+        /** An interface describing the data returned by calling "chart.toJSON()". */
+        interface ChartData {
+            chartType?: string;
+            id?: number;
+            imageData?: string;
+            name?: string;
+            nullableChartType?: string;
+            nullableShowLabel?: boolean;
+            title?: string;
+        }
+        /** An interface describing the data returned by calling "chartCollection.toJSON()". */
+        interface ChartCollectionData {
+            items?: FakeExcelApi.Interfaces.ChartData[];
+        }
+        /** An interface describing the data returned by calling "testWorkbook.toJSON()". */
+        interface TestWorkbookData {
+            /**
+            *
+            * When this property is accessed, the server will return errorCode E_CHANGED_STATE
+            *
+            * [Api set: FakeExcelApi]
+            */
+            errorWorksheet?: FakeExcelApi.Interfaces.WorksheetData;
+            /**
+            *
+            * When this property is accessed, the server will return errorCode
+            *
+            * [Api set: FakeExcelApi]
+            */
+            errorWorksheet2?: FakeExcelApi.Interfaces.WorksheetData;
+            sectionGroups?: FakeExcelApi.Interfaces.SectionGroupData[];
+            sections?: FakeExcelApi.Interfaces.SectionData[];
+            created?: Date;
+            nullableCreated?: Date;
+        }
+        /** An interface describing the data returned by calling "workbook.toJSON()". */
+        interface WorkbookData {
+            activeWorksheet?: FakeExcelApi.Interfaces.WorksheetData;
+            charts?: FakeExcelApi.Interfaces.ChartData[];
+            sheets?: FakeExcelApi.Interfaces.WorksheetData[];
+        }
+        /** An interface describing the data returned by calling "worksheet.toJSON()". */
+        interface WorksheetData {
+            errorRangeProp?: FakeExcelApi.Interfaces.ErrorRangeData;
+            rangeProp?: FakeExcelApi.Interfaces.RangeData;
+            rangePropOrNull?: FakeExcelApi.Interfaces.RangeData;
+            ranges?: FakeExcelApi.Interfaces.RangeData[];
+            rows?: FakeExcelApi.Interfaces.RowData[];
+            calculatedName?: string;
+            name?: string;
+        }
+        /** An interface describing the data returned by calling "worksheetCollection.toJSON()". */
+        interface WorksheetCollectionData {
+            items?: FakeExcelApi.Interfaces.WorksheetData[];
+        }
+        /** An interface describing the data returned by calling "range.toJSON()". */
+        interface RangeData {
+            sort?: FakeExcelApi.Interfaces.RangeSortData;
+            parentSheet?: FakeExcelApi.Interfaces.WorksheetData;
+            columnIndex?: number;
+            errorStringProp?: string;
+            logText?: string;
+            rowIndex?: number;
+            text?: string;
+            textArray?: Array<Array<string>>;
+            value?: any;
+            valueArray?: Array<Array<any>>;
+            valueArray2?: Array<string>;
+            valueTypes?: Array<Array<string>>;
+            extErrorIntProp?: number;
+            extProp?: number;
+            extPropConvertValue?: number;
+            extPropOneBasedValue?: number;
+            extWidth?: number;
+        }
+        /** An interface describing the data returned by calling "rangeCollection.toJSON()". */
+        interface RangeCollectionData {
+            items?: FakeExcelApi.Interfaces.RangeData[];
+        }
+        /** An interface describing the data returned by calling "errorRange.toJSON()". */
+        interface ErrorRangeData {
+            errorProp?: number;
+        }
+        /** An interface describing the data returned by calling "rangeSort.toJSON()". */
+        interface RangeSortData {
+            fields?: Array<FakeExcelApi.SortField>;
+            fields2?: Array<any>;
+            queryField?: FakeExcelApi.QueryWithSortField;
+        }
+        /** An interface describing the data returned by calling "row.toJSON()". */
+        interface RowData {
+            index?: number;
+        }
+        /** An interface describing the data returned by calling "rowCollection.toJSON()". */
+        interface RowCollectionData {
+            items?: FakeExcelApi.Interfaces.RowData[];
+        }
+        /** An interface describing the data returned by calling "sectionGroup.toJSON()". */
+        interface SectionGroupData {
+            sectionGroups?: FakeExcelApi.Interfaces.SectionGroupData[];
+            sections?: FakeExcelApi.Interfaces.SectionData[];
+            id?: number;
+        }
+        /** An interface describing the data returned by calling "sectionGroupCollection.toJSON()". */
+        interface SectionGroupCollectionData {
+            items?: FakeExcelApi.Interfaces.SectionGroupData[];
+        }
+        /** An interface describing the data returned by calling "section.toJSON()". */
+        interface SectionData {
+            charts?: FakeExcelApi.Interfaces.ChartData[];
+            id?: number;
+        }
+        /** An interface describing the data returned by calling "sectionCollection.toJSON()". */
+        interface SectionCollectionData {
+            items?: FakeExcelApi.Interfaces.SectionData[];
+        }
+        /** An interface describing the data returned by calling "pivotTable.toJSON()". */
+        interface PivotTableData {
+            name?: string;
+        }
+        /**
+         * [Api set: SomeOtherApiSet 1.1]
+         */
+        interface ApplicationLoadOptions {
+            $all?: boolean;
+            activeWorkbook?: FakeExcelApi.Interfaces.WorkbookLoadOptions;
+            restrictedWorkbook?: FakeExcelApi.Interfaces.WorkbookLoadOptions;
+            testWorkbook?: FakeExcelApi.Interfaces.TestWorkbookLoadOptions;
+            hasBase?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi 1.1]
+         */
+        interface ChartLoadOptions {
+            $all?: boolean;
+            chartType?: boolean;
+            id?: boolean;
+            imageData?: boolean;
+            name?: boolean;
+            nullableChartType?: boolean;
+            nullableShowLabel?: boolean;
+            title?: boolean;
+        }
+        /**
+         *
+         * Chart collection
+         *
+         * [Api set: FakeExcelApi]
+         */
+        interface ChartCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: ChartType
+             */
+            chartType?: boolean;
+            /**
+            For EACH ITEM in the collection: Id
+             */
+            id?: boolean;
+            /**
+            For EACH ITEM in the collection: ImageData
+             */
+            imageData?: boolean;
+            /**
+            For EACH ITEM in the collection: Name
+             */
+            name?: boolean;
+            /**
+            For EACH ITEM in the collection: NullableChartType
+             */
+            nullableChartType?: boolean;
+            /**
+            For EACH ITEM in the collection: NullableShowLabel
+             */
+            nullableShowLabel?: boolean;
+            /**
+            For EACH ITEM in the collection: Title
+             */
+            title?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface TestWorkbookLoadOptions {
+            $all?: boolean;
+            /**
+            *
+            * When this property is accessed, the server will return errorCode E_CHANGED_STATE
+            *
+            * [Api set: FakeExcelApi]
+            */
+            errorWorksheet?: FakeExcelApi.Interfaces.WorksheetLoadOptions;
+            /**
+            *
+            * When this property is accessed, the server will return errorCode
+            *
+            * [Api set: FakeExcelApi]
+            */
+            errorWorksheet2?: FakeExcelApi.Interfaces.WorksheetLoadOptions;
+            created?: boolean;
+            nullableCreated?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi 1.1]
+         */
+        interface WorkbookLoadOptions {
+            $all?: boolean;
+            activeWorksheet?: FakeExcelApi.Interfaces.WorksheetLoadOptions;
+            charts?: FakeExcelApi.Interfaces.ChartCollectionLoadOptions;
+        }
+        /**
+         * [Api set: FakeExcelApi 1.1]
+         */
+        interface WorksheetLoadOptions {
+            $all?: boolean;
+            errorRangeProp?: FakeExcelApi.Interfaces.ErrorRangeLoadOptions;
+            rangeProp?: FakeExcelApi.Interfaces.RangeLoadOptions;
+            rangePropOrNull?: FakeExcelApi.Interfaces.RangeLoadOptions;
+            calculatedName?: boolean;
+            name?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface WorksheetCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: ErrorRangeProp
+            */
+            errorRangeProp?: FakeExcelApi.Interfaces.ErrorRangeLoadOptions;
+            /**
+            For EACH ITEM in the collection: RangeProp
+            */
+            rangeProp?: FakeExcelApi.Interfaces.RangeLoadOptions;
+            /**
+            For EACH ITEM in the collection: RangePropOrNull
+            */
+            rangePropOrNull?: FakeExcelApi.Interfaces.RangeLoadOptions;
+            /**
+            For EACH ITEM in the collection: CalculatedName
+             */
+            calculatedName?: boolean;
+            /**
+            For EACH ITEM in the collection: Name
+             */
+            name?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi 1.1]
+         */
+        interface RangeLoadOptions {
+            $all?: boolean;
+            sort?: FakeExcelApi.Interfaces.RangeSortLoadOptions;
+            parentSheet?: FakeExcelApi.Interfaces.WorksheetLoadOptions;
+            columnIndex?: boolean;
+            errorStringProp?: boolean;
+            logText?: boolean;
+            rowIndex?: boolean;
+            text?: boolean;
+            textArray?: boolean;
+            value?: boolean;
+            valueArray?: boolean;
+            valueArray2?: boolean;
+            valueTypes?: boolean;
+            extErrorIntProp?: boolean;
+            extProp?: boolean;
+            extPropConvertValue?: boolean;
+            extPropOneBasedValue?: boolean;
+            extWidth?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface RangeCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: Sort
+            */
+            sort?: FakeExcelApi.Interfaces.RangeSortLoadOptions;
+            /**
+            For EACH ITEM in the collection: ParentSheet
+            */
+            parentSheet?: FakeExcelApi.Interfaces.WorksheetLoadOptions;
+            /**
+            For EACH ITEM in the collection: ColumnIndex
+             */
+            columnIndex?: boolean;
+            /**
+            For EACH ITEM in the collection: ErrorStringProp
+             */
+            errorStringProp?: boolean;
+            /**
+            For EACH ITEM in the collection: LogText
+             */
+            logText?: boolean;
+            /**
+            For EACH ITEM in the collection: RowIndex
+             */
+            rowIndex?: boolean;
+            /**
+            For EACH ITEM in the collection: Text
+             */
+            text?: boolean;
+            /**
+            For EACH ITEM in the collection: TextArray
+             */
+            textArray?: boolean;
+            /**
+            For EACH ITEM in the collection: Value
+             */
+            value?: boolean;
+            /**
+            For EACH ITEM in the collection: ValueArray
+             */
+            valueArray?: boolean;
+            /**
+            For EACH ITEM in the collection: ValueArray2
+             */
+            valueArray2?: boolean;
+            /**
+            For EACH ITEM in the collection: ValueTypes
+             */
+            valueTypes?: boolean;
+            /**
+            For EACH ITEM in the collection: ExtErrorIntProp
+             */
+            extErrorIntProp?: boolean;
+            /**
+            For EACH ITEM in the collection: ExtProp
+             */
+            extProp?: boolean;
+            /**
+            For EACH ITEM in the collection: ExtPropConvertValue
+             */
+            extPropConvertValue?: boolean;
+            /**
+            For EACH ITEM in the collection: ExtPropOneBasedValue
+             */
+            extPropOneBasedValue?: boolean;
+            /**
+            For EACH ITEM in the collection: ExtWidth
+             */
+            extWidth?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface ErrorRangeLoadOptions {
+            $all?: boolean;
+            errorProp?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface RangeSortLoadOptions {
+            $all?: boolean;
+            fields?: boolean;
+            fields2?: boolean;
+            queryField?: boolean;
+        }
+        /**
+         *
+         * A row class without Id property. It's to test the case when there is no Id property.
+         *
+         * [Api set: FakeExcelApi 1.3]
+         */
+        interface RowLoadOptions {
+            $all?: boolean;
+            index?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi 1.3]
+         */
+        interface RowCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: Index
+             */
+            index?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface SectionGroupLoadOptions {
+            $all?: boolean;
+            id?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface SectionGroupCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: Id
+             */
+            id?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface SectionLoadOptions {
+            $all?: boolean;
+            charts?: FakeExcelApi.Interfaces.ChartCollectionLoadOptions;
+            id?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface SectionCollectionLoadOptions {
+            $all?: boolean;
+            /**
+            For EACH ITEM in the collection: Charts
+            */
+            charts?: FakeExcelApi.Interfaces.ChartCollectionLoadOptions;
+            /**
+            For EACH ITEM in the collection: Id
+             */
+            id?: boolean;
+        }
+        /**
+         * [Api set: FakeExcelApi]
+         */
+        interface PivotTableLoadOptions {
+            $all?: boolean;
+            name?: boolean;
+        }
+    }
+}

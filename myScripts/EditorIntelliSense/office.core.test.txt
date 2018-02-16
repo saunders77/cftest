@@ -1,0 +1,34 @@
+declare namespace OfficeCoreTest {
+    function test_AgaveVisual_BiShim$GetFooIsBar_cvt_JScript_V10(): Promise<void>;
+}
+declare namespace OfficeCoreTest {
+    function test_Experimentation_Integration$FeatureBoolVal_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_Integration$FeatureIntegerVal_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_Integration$FeatureStringVal_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_Integration$DeferredFlights_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_Integration$ClientSessionId_cvt_JScript_V11(): Promise<void>;
+}
+declare namespace OfficeCoreTest {
+    function test_Experimentation_FeatureGateDark_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureGateProduction_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureIntegerVal_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureIntValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureScopedIntValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureStringVal_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureStringValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_FeatureScopedStringValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideBool_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideInt_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideIntValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideScopedIntValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideString_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideStringValArray_cvt_JScript_V11(): Promise<void>;
+    function test_Experimentation_OverrideScopedStringValArray_cvt_JScript_V11(): Promise<void>;
+}
+declare namespace OfficeCoreTest {
+    namespace Util {
+        /** Asserts that a statement is true, and throws (with explanation text) if the statement is false. */
+        function assert(statement: boolean, explanation?: string): void;
+        function assertCompareValues(expectedValue: any, actualValue: any, additionalComment?: string): void;
+    }
+}

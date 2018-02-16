@@ -1,0 +1,2572 @@
+declare module ExcelTest {
+    module ChartUtil {
+        module Rest {
+            module Thenable {
+                /** Creates a basic chart, and validates that the chart truly got created and returned object is of type chart */
+                function createBasicChart(worksheetName?: string): () => OfficeExtension.IPromise<any>;
+                function createChart(worksheetName?: string, chartType?: string, sourceData?: string, seriesBy?: string): () => OfficeExtension.IPromise<any>;
+                function patchChart(relativePath: string, properties: any): (resp: RichApiTest.RestResponseInfo) => OfficeExtension.IPromise<any>;
+                function getChartCount(worksheetName?: string): () => OfficeExtension.IPromise<number>;
+                function removeAll(worksheetName?: string): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo[]>;
+            }
+            /** Creates a basic chart, and validates that the chart truly got created and returned object is of type chart */
+            function createBasicChart(worksheetName?: string): OfficeExtension.IPromise<any>;
+            function createChart(worksheetName?: string, chartType?: string, sourceData?: string, seriesBy?: string): OfficeExtension.IPromise<any>;
+            function patchChart(resp: RichApiTest.RestResponseInfo, relativePath: string, properties: any): OfficeExtension.IPromise<any>;
+            function patchChartById(id: string, relativePath: string, properties: any): OfficeExtension.IPromise<any>;
+            function getChartCount(worksheetName?: string): OfficeExtension.IPromise<number>;
+            function removeAll(worksheetName?: string): OfficeExtension.IPromise<RichApiTest.RestResponseInfo[]>;
+            function getChartPropertyAndValidateObjectType(relativeUrl: string, objectType: string): void;
+            function getChartPropertyWithAxisAndValidateObjectType(relativeUrl: string, objectType: string): void;
+            function getChartPropertyAndValidateValue(relativeUrl: string, expectedValue: any): void;
+            function setChartFontPropertyAndValidateValue(setUrl: string, properties: any, getUrl: string, expectedValue: any): void;
+        }
+        function getDefaultChartValue(): string;
+        function getDefaultColumnWidth(): 53 | 48;
+    }
+}
+declare module ExcelTest {
+    var reportError: typeof RichApiTest.reportError;
+    var reportJQueryError: typeof RichApiTest.reportJQueryError;
+    var settings: {
+        timeoutSeconds: number;
+        baseUri: string;
+    };
+    var IntentionalSkip: typeof RichApiTest.IntentionalSkip;
+    /**
+        For use as the final .then clause of a promise, before the .catch.
+        E.g.,: ".then(pass).catch(ExcelTest.reportError)".
+        Note that RichApiTestCore will invoke this namespace-based "pass"
+        Instead of the default one, since this one is present.
+    */
+    function pass(): OfficeExtension.IPromise<void>;
+    function getNewScriptText(): string;
+    function _injectCollectionCountTest_JS(objectFetcher: (ctx: Excel.RequestContext) => OfficeExtension.ClientObject): OfficeExtension.IPromise<number>;
+    function _injectCollectionCountTest_REST(path: string): OfficeExtension.IPromise<number>;
+    function _async_injectCollectionCountTest_JS(objectFetcher: (ctx: Excel.RequestContext) => OfficeExtension.ClientObject): Promise<void>;
+}
+declare module ExcelTest {
+    module CustomXmlPartsUtil {
+        module Namespace {
+            var ns1: string;
+            var ns2: string;
+            var ns3: string;
+        }
+        module Id {
+            var bad: string;
+        }
+        module Xml {
+            function makeFragment(ns?: string): string;
+        }
+        module Common {
+            module Helper {
+                function validateResetCollection(parts: Array<Excel.CustomXmlPart>): void;
+                function validateCollectionNamespace(parts: Array<Excel.CustomXmlPart>, expectedCount: number, ns: string): void;
+                function validateCollection(parts: Array<Excel.CustomXmlPart>, expectedCount: number, itemValidation?: (part: Excel.CustomXmlPart) => boolean): void;
+            }
+        }
+        module JScript {
+            module Thenable {
+                function reset(ctx: Excel.RequestContext): OfficeExtension.IPromise<Excel.CustomXmlPart>;
+            }
+        }
+        module Rest {
+            module Thenable {
+                function reset(): OfficeExtension.IPromise<Excel.CustomXmlPart>;
+            }
+        }
+    }
+}
+/**
+    This RestUtility wuill eventually be merged into RichApiTest.Core in OSFClient, once we're done writing tests.
+    But for now, due to branching complexity, it's easier to accumulate everything here, then copy over to OSFClient in one go,
+    and then remove the duplication.
+*/
+declare module ExcelTest {
+    module RestUtility {
+        enum Status {
+            OK = 200,
+            Created = 201,
+            NoContent = 204,
+            BadRequest = 400,
+            NotFound = 404,
+            MethodNotAllowed = 405,
+            InternalServeError = 500,
+        }
+        module Thenable {
+            /**
+             * Posts a request with a message body (e.g., posting to collection)
+             * @param relativePath - path of the action relative to the root, like "worksheets('charts')/charts"
+             * @param body - an object that will get JSON-stringified into the post message body.
+            */
+            function post(relativePath: string, body: any): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+            /**
+             * Posts a method action to a relative URL path.
+             * @param relativePath - path of the action relative to the root, like "worksheets('charts')/charts/add"
+             * @param mathodParameters - an object literal (not string) with parameter key-value pairs (e.g., "{ 'type': 'pie', 'sourceData': 'A1:B4' }")
+             */
+            function postAsUrlAction(relativePath: string, methodParameters?: any): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+            /** Performs a REST get based on a path */
+            function get(relativePath: string): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+            /** Performs a REST delete based on a path */
+            function deleteItem(relativePath: string): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+            /** performs a PATCH operation on an item, passing in the specified properties */
+            function patch(id: string, properties: any): () => OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+            /** Gets an object of type T out of the response. Optionally applies a transformation function (e.g., to get a particular property out of the body). */
+            function getBodyAsObject<T>(transform?: (obj: any) => T): (resp: RichApiTest.RestResponseInfo) => T;
+            /** Verifies that the object type matches the expected type, then pipe the object through */
+            function verifyObjectType<T>(expectedObjectType: string): (obj: T) => T;
+            /** Validates the status code of a response (throwing on invalid), and then pipes the RestResponseInfo to the next .then */
+            function validateStatus(expected: RestUtility.Status | number): (resp: RichApiTest.RestResponseInfo) => RichApiTest.RestResponseInfo;
+            /** Validates the status code of an array of responses (throwing on invalid), and then pipes the RestResponseInfo's to the next .then */
+            function validateStatuses(expected: RestUtility.Status | number): (responses: RichApiTest.RestResponseInfo[]) => RichApiTest.RestResponseInfo[];
+            function validateErrorCodeWithVadidateAction(validateAction: (errorCode: string) => void): (resp: RichApiTest.RestResponseInfo) => RichApiTest.RestResponseInfo;
+            function validateErrorCode(expectedCode: string): (resp: RichApiTest.RestResponseInfo) => RichApiTest.RestResponseInfo;
+            /** invoke get method for given url and validate response using promise, and then pipes void to the next .then */
+            function invokeGetAndValidateResponsePromise(relativeUrl: string, expectedValue: any, transform: (obj: any) => any): () => OfficeExtension.IPromise<void>;
+        }
+        /**
+         * invoke get method for given url and validate response using promise
+         * @param relativePath - path of the action relative to the root, like "worksheets('sheet1')".
+         * @param expectedValue - expected value in response.
+         * @param transform - transform function.
+         */
+        function invokeGetAndValidateResponsePromise(relativeUrl: string, expectedValue: any, transform: (obj: any) => any): OfficeExtension.IPromise<void>;
+        /** Validates the status code of a response (throwing on invalid), and return the RestResponseInfo to the caller for chaining */
+        function validateStatus(expected: RestUtility.Status | number, response: RichApiTest.RestResponseInfo): RichApiTest.RestResponseInfo;
+        /**
+         * invoke get method for given url and validate response
+         * @param relativePath - path of the action relative to the root, like "worksheets('sheet1')".
+         * @param expectedValue - expected value in response.
+         * @param transform - transform function.
+         */
+        function invokeGetAndValidateResponse(relativeUrl: string, expectedValue: any, transform: (obj: any) => any): void;
+        /**
+         * Validates that the value and expected value are same with each other
+         */
+        function validateValue(value: any, expectedValue: any, delta?: number): void;
+        /**
+         * Ensure the disable API fails with expected error
+         * @param relativePath - path of the action relative to the root, like "worksheets('sheet1')".
+         * @param httpMethod - REST request method.
+         */
+        function ensureDisabledApiFailed(relativePath: string, httpMethod: string): void;
+        /**
+         * Posts a request with a message body (e.g., posting to collection)
+         * @param relativePath - path of the action relative to the root, like "worksheets('charts')/charts"
+         * @param body - an object that will get JSON-stringified into the post message body.
+         */
+        function post(relativePath: string, body?: any): OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+        /**
+         * Posts a method action to a relative URL path.
+         * @param relativePath - path of the action relative to the root, like "worksheets('charts')/charts/add"
+         * @param mathodParameters (optional) - an object literal (not string) with parameter key-value pairs (e.g., "{ 'type': 'pie', 'sourceData': 'A1:B4' }")
+         */
+        function postAsUrlAction(relativePath: string, methodParameters?: {
+            [key: string]: any;
+        }): OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+        /** Performs a REST get based on a path */
+        function get(relativePath: string): OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+        function getAndExtract(relativePath: string, propertyName: string): Promise<any>;
+        /** performs a PATCH operation on an item, passing in the specified properties */
+        function patch(id: string, properties: any): OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+        /** Deletes an item either based on its "@odata.id" field. Can pass in either just the ID string, or a full object that contains this field */
+        function deleteItem(obj: string | Object): OfficeExtension.IPromise<RichApiTest.RestResponseInfo>;
+        /** Gets an object of type T out of the response. Optionally applies a transformation function (e.g., to get a particular property out of the body). */
+        function getBodyAsObject<T>(resp: RichApiTest.RestResponseInfo, transform?: (obj: any) => T): T;
+        /** Gets the "@odata.id" property from the object */
+        function getODataId(obj: any): string;
+        /** Gets the "@odata.id" property from the object */
+        function getODataType(obj: any): string;
+        /**
+            Encodes an odata literal (e.g., when a parameter is passed in to a method, as in:
+            worksheets('charts')/charts/add(type='pie',sourceData='a1:b4')
+    
+            While the encoding is not necessary for the simple case above, if instead of 'a1:b4' the text contained
+            an apostrope or invalid URL characters, it would need to be appropriately encoded.
+        */
+        function encodeODataLiteral(value: any): any;
+    }
+}
+declare module ExcelTest {
+    function test_SampleTest_SetAndGetRangeValue_cvt_JScript_V11(): void;
+    function test_SampleTest_SetAndGetRangeValue_cvt_REST_V11(): void;
+    function test_SampleTest_SetAndGetRangeValue$AsyncAwait_cvt_JScript_V11(): Promise<void>;
+    function test_SampleTest_SetAndGetRangeValue$AsyncAwait_cvt_REST_V11(): Promise<void>;
+    function test_SampleTest_Clear_bvt_JScript_V11(): Promise<void>;
+}
+declare module ExcelTest {
+    /**
+     * This class is manually written according to the Test type defined in the ExcelApi.cs file.
+     */
+    class TestApi extends OfficeExtension.ClientObject {
+        readonly _className: string;
+        /**
+         *
+         * For internal use only.
+         *
+         * [Api set: ExcelApi 1.6]
+         */
+        scenario1(param1: string, param2: number): OfficeExtension.ClientResult<string>;
+        /**
+         *
+         * For internal use only.
+         *
+         * [Api set: ExcelApi 1.6]
+         */
+        scenario2(param1: string, param2: number, param3: number, param4: string, param5: any): void;
+        /** Handle results returned from the document
+         * @private
+         */
+        _handleResult(value: any): void;
+        toJSON(): {};
+        /**
+         *
+         * For internal use only.
+         *
+         * [Api set: ExcelApi 1.6]
+         */
+        static getTestObject(workbook: Excel.Workbook): ExcelTest.TestApi;
+    }
+}
+declare module ExcelTest {
+    module Util {
+        var ensureSyncFailed: (ctx: Excel.RequestContext, expectedErrorCode: string, additionalValidation?: (errorInfo: OfficeExtension.Error) => boolean, onCompletion?: () => void) => void;
+        var ensureSyncFailedPromise: (ctx: Excel.RequestContext, expectedErrorCode: string, expectedErrorLocation?: string) => OfficeExtension.IPromise<OfficeExtension.Error>;
+        var expectException: typeof RichApiTest.Util.expectException;
+        var promisify: typeof RichApiTest.Util.promisify;
+        var throwOfficeError: typeof RichApiTest.Util.throwOfficeError;
+        var ensureExpectedFailureAndPassOrFail: typeof RichApiTest.Util.ensureExpectedFailureAndPassOrFail;
+        var ensureExpectedFailureAndThrowIfUnexpected: typeof RichApiTest.Util.ensureExpectedFailureAndThrowIfUnexpected;
+        var wait: typeof RichApiTest.Util.wait;
+        var vocalizeAssert: typeof RichApiTest.Util.vocalizeAssert;
+        var assert: typeof RichApiTest.Util.assert;
+        var assertCompareArray: typeof RichApiTest.Util.assertCompareArray;
+        var assertCompareValues: typeof RichApiTest.Util.assertCompareValues;
+        var assertCompareValuesNotEqual: typeof RichApiTest.Util.assertCompareValuesNotEqual;
+        var assertCompareNumeric: typeof RichApiTest.Util.assertCompareNumeric;
+        var assertCompareObjectsAsJson: typeof RichApiTest.Util.assertCompareObjectsAsJson;
+        var compare: typeof RichApiTest.Util.compare;
+        var parseStringAsNumberAndCompare: typeof RichApiTest.Util.parseStringAsNumberAndCompare;
+        var compareProperty: typeof RichApiTest.Util.compareProperty;
+        var compareArray: typeof RichApiTest.Util.compareArray;
+        var isObject: typeof RichApiTest.Util.isObject;
+        var startsWith: typeof RichApiTest.Util.startsWith;
+        function moveSheet(sheetName: string, target: any): void;
+        /**
+            Removes all charts from the sheet, and then either calls the passed-in test function, or just returns a promise that can be chained on to another action.
+        */
+        function removeAllChartsBefore(sheetName: string, test?: () => void): OfficeExtension.IPromise<any>;
+        function removeAllChartsAsync(sheetName: string): Promise<void>;
+        function clearSheetBefore(sheetName: string, test: () => void): void;
+        function clearSheet(sheetName: string): Promise<void>;
+        function clearSheetBeforePromise(ctx: Excel.RequestContext, sheetName: string): OfficeExtension.IPromise<void>;
+        function clearSheetRest(sheetName: string): OfficeExtension.IPromise<any>;
+        function clearSheetAndAddPivotTable(ctx: Excel.RequestContext, sheetName: string, simpleTable: boolean): OfficeExtension.IPromise<any>;
+        function checkSheetExistsRunTest(ctx: Excel.RequestContext, sheetName: string, onCompletion?: () => void): void;
+        function getTableAtPosition(address: string, callback: (table: Excel.Table) => void): void;
+        function deleteNameIfExist(ctx: Excel.RequestContext, name: string): OfficeExtension.IPromise<any>;
+        function deleteNameIfExistOnWorksheet(ctx: Excel.RequestContext, worksheet: Excel.Worksheet, name: string): OfficeExtension.IPromise<any>;
+        function isGraphTest(): boolean;
+        function isWAC(): boolean;
+        function isDesktop(): boolean;
+        function isMacOS(): boolean;
+        function isiOS(): boolean;
+        function isApple(): boolean;
+        function isAndroid(): boolean;
+        function isUniversal(): boolean;
+        function testProperty(ctx: Excel.RequestContext, obj: any, objName: string, propertyName: string, defaultValue: any, newValue: any): OfficeExtension.IPromise<any>;
+        function testBoolProperty(ctx: Excel.RequestContext, obj: any, objName: string, propertyName: string, defaultValue: boolean): OfficeExtension.IPromise<any>;
+    }
+}
+declare module ExcelTest {
+    function richApiMessageHandler(eventArgs: any): OfficeExtension.IPromise<any>;
+    function test_AddinMessage_AddHandler_cvt_JScript_V17(): void;
+    function test_AddinMessage_Trigger$string_cvt_JScript_V17(): void;
+    function test_AddinMessage_Trigger$object_cvt_JScript_V17(): void;
+    function test_AddinMessage_Event$basic_cvt_JScript_V17(): void;
+    function test_AddinMessage_Event$trigger3times_cvt_JScript_V17(): void;
+    /**
+     * Two events(testEvent and test1Event) both register the handler on Javascript side. While the _RegisterTestEvent() of testevent do nothing(do not register the event infomation on native side for Win32 and on client side for WAC),
+     * but _RegisterTest1Event() of test1Event do register the event in native/WAC-client side. So when trigger both the two events in native side, only test1Event's message will be enqueued by checking the event registration and sent to Javascript side.
+     */
+    function test_AddinMessage_Event1Registered$event1triggered_cvt_JScript_V17(): void;
+}
+declare module ExcelTest {
+    function test_Async_BindingAddFromPromptNewlyCreatedBinding_cvt_JScript_V16(): OfficeExtension.IPromise<void>;
+    function test_Async_BindingAddFromPromptExistingBinding_cvt_JScript_V16(): OfficeExtension.IPromise<void>;
+}
+declare module ExcelTest {
+    function test_Binding_GetBindingsCount_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetBindingsCount$ViaMethod_cvt_JScript_V14(): Promise<void>;
+    function test_Binding_GetRangeBindingById_bvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetRangeBindingByIndex_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetTextBindingById_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetTableBindingInvalid_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetRangeBindingInvalid_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_GetTextBindingInvalid_cvt_JScript_V11(): Promise<void>;
+    function test_Binding_NewBindingRangeInput_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddressInput_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingEmptyIdIsOk_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingNullIdIsInvalid_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddressInputInvalid_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddressWithOmittedSheetName_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddFromNamedItemAddressInput$Invalid_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddFromNamedItemInvalid_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddFromNamedItemName_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingWithSameName_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddFromNamedItemNotAName_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_NewBindingAddFromSelection_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_AddAndDeleteBinding_cvt_JScript_V13(): Promise<void>;
+    function test_Binding_GetItemOrNull_cvt_JScript_V14(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_Events_Binding$AddRemoveUsingOfficeJs10Api_cvt_JScript_V11(): void;
+    function test_Events_Binding$AddRemoveDataChanged_cvt_JScript_V11(): void;
+    function test_Events_Binding$AddRemoveSelectionChanged_cvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_Chart_ColorParser1_cvt_JScript_V11(): void;
+    function test_Chart_ColorParser2Illegal_cvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_Chart_AddWithTitleAndLegendSettings_cvt_JScript_V11(): void;
+    function test_Chart_AddAndCheckNullablePropertiesOfTitleAndLegend_cvt_JScript_V11(): void;
+    function test_Chart_AddAndCheckNullablePropertiesOfDataLabels_cvt_JScript_V11(): void;
+    function test_Chart_CheckShowAllFieldButtonsAgainstNonPivotChart_cvt_JScript_V18(): void;
+}
+declare module ExcelTest {
+    function test_Chart_AddWithFullAddressScenario_cvt_JScript_V11(): void;
+    function test_Chart_AddWithGlobalNamedRangeObjectScenario_cvt_JScript_V11(): void;
+    function test_Chart_AddWithStringAddressInvalid_cvt_JScript_V11(): void;
+    function test_Chart_AddWithDataFromAnotherSheetScenario_cvt_JScript_V11(): void;
+    function test_Chart_AddChartLoadAllProperties_cvt_JScript_V11(): void;
+    function test_Chart_GetChartID_cvt_JScript_V18(): Promise<void>;
+    function test_Chart_ResizeAndMove_cvt_JScript_V11(): void;
+    function test_Chart_Indexer_cvt_JScript_V11(): void;
+    function test_Chart_IndexerNoCharts_cvt_JScript_V11(): void;
+    function test_Chart_GetterNoCharts_cvt_JScript_V11(): void;
+    function test_Chart_Deletion_cvt_JScript_V11(): void;
+    function test_Chart_GetChartByName_cvt_JScript_V11(): void;
+    function test_Chart_GetChartByNameFailOnNotFound_cvt_JScript_V11(): void;
+    function test_Chart_SetNameToEmptyShouldFail_cvt_JScript_V11(): void;
+    function test_Chart_GetChartByEmptyNameShouldFail_cvt_JScript_V11(): void;
+    function test_Chart_DeleteOnAccess_cvt_JScript_V11(): void;
+    function test_Chart_FailOnInvalidSourceArgumentType_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionAddresses1_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionAddresses2_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionAddresses3_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionSameCell_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionLargeChart_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionAddressesInvalidBecauseOnWrongSheet_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionAddressesInvalidBecauseEmpty_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionRangeInvalid_cvt_JScript_V11(): void;
+    function test_Chart_SetPositionInvalidBecauseEndIsSmallerThanStart_cvt_JScript_V11(): void;
+    function test_Chart_CheckDefaultSizeOnAddingChart_cvt_JScript_V11(): void;
+    function test_Chart_Image_cvt_JScript_V12(): void;
+    function test_Chart_ImageHeight_cvt_JScript_V12(): void;
+    function test_Chart_ImageWidth_cvt_JScript_V12(): void;
+    function test_Chart_ImageBoth_cvt_JScript_V12(): void;
+    function test_Chart_ImageFill_cvt_JScript_V12(): void;
+    function test_Chart_ImageFitAndCenter_cvt_JScript_V12(): void;
+    function test_Chart_ImageFitAndDefault_cvt_JScript_V12(): void;
+    function test_Chart_ImageNegative_cvt_JScript_V12(): void;
+    function test_Chart_SetDataLabelPropertiesNullNoOp_cvt_JScript_V11(): void;
+    function test_Chart_SetLegendPropertiesNullNoOp_cvt_JScript_V11(): void;
+    function test_Chart_SetTitlePropertiesNullNoOp_cvt_JScript_V11(): void;
+    function test_Chart_SetFontPropertiesNullNoOp_cvt_JScript_V11(): void;
+    function test_Chart_GetWorksheet_cvt_JScript_V12(): void;
+    function test_Chart_SeriesBy_cvt_JScript_V12(): void;
+    function test_Chart_GetItemOrNull_cvt_JScript_V14(): void;
+    function test_Chart_Count_cvt_JScript_V14(): void;
+}
+declare module ExcelTest {
+    function test_Chart2_AddWithNoTitle_cvt_JScript_V11(): void;
+    function test_Chart2_TitleRemovalFollowedBySettingTextOnIt_cvt_JScript_V11(): void;
+    function test_Chart2_TitleRemovalFollowedBySettingOverlay_cvt_JScript_V11(): void;
+    function test_Chart2_SetTitleTextNull_cvt_JScript_V11(): void;
+    function test_Chart2_LegendOnAndOffAndOverlay_cvt_JScript_V11(): void;
+    function test_Chart2_LegendProperties_cvt_JScript_V18(): void;
+    function test_Chart2_LegendPropertiesWithInvalidArg_cvt_JScript_V18(): void;
+    function test_Chart2_LegendNullableProperties_cvt_JScript_V18(): void;
+    function test_Chart2_LegendEntriesGetCount_cvt_JScript_V18(): void;
+    function test_Chart2_LegendEntriesOnInvisibleLegend_cvt_JScript_V18(): void;
+    function test_Chart2_LegendEntryProperty_cvt_JScript_V18(): void;
+    function test_Chart2_DataLabelsShowValuesAndLegendKeysScenario_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsShowPercentagesAndCategoryNamesWithCustomSeparatorScenario_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsBubbleSizeAndSettingSeparatorFirstScenario_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsEnsureSettingSeparatorButNothingElseDoesntAddAnyTextsScenario_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsCallouts_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsSettingPropertyToFalseWhenNoDataLabelsExist_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsSettingInvalidPositionForChartType_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsSettingInvalidElementType1_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsSettingInvalidElementType2_cvt_JScript_V11(): void;
+    function test_Chart2_DataLabelsSettingInvalidElementType3_cvt_JScript_V11(): void;
+    function test_Chart2_NotShownPointDataLabelPositionIsNull_cvt_JScript_V18(): void;
+    function test_Chart2_SetAndGetDataLabelPosition_cvt_JScript_V18(): void;
+    function test_Chart2_SetAndGetDataLabelShowContent$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SetAndGetDataLabelShowBubbleSize$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SetAndGetDataLabelSeparator$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SetAndGetChartType$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_AxisMinMaxUnitPropertiesScenario_cvt_JScript_V11(): void;
+    function test_Chart2_SetAndGetAxisDisplayUnitScenario_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetAxisPropertyScenario_cvt_JScript_V18(): void;
+    function test_Chart2_AxisSetMinToDataTrimmingValuesScenario_cvt_JScript_V11(): void;
+    function test_Chart2_AxisMinMaxUnitPropertyReset_cvt_JScript_V11(): void;
+    function test_Chart2_AxisValueAdjustment_cvt_JScript_V11(): void;
+    function test_Chart2_AxisGridlinesAndTitlesScenario_cvt_JScript_V11(): void;
+    function test_Chart2_AxisTitleRetrievalWhenNoAxisTitleExists1_cvt_JScript_V11(): void;
+    function test_Chart2_AxisTitleRetrievalWhenNoAxisTitleExists2_cvt_JScript_V11(): void;
+    function test_Chart2_AxisValueSettingThrowsOnNull_cvt_JScript_V11(): void;
+    function test_Chart2_InvalidAxisSet1_cvt_JScript_V11(): void;
+    function test_Chart2_InvalidAxisSet2_cvt_JScript_V11(): void;
+    function test_Chart2_InvalidAxisSet3_cvt_JScript_V11(): void;
+    function test_Chart2_InvalidAxisGet1_cvt_JScript_V11(): void;
+    function test_Chart2_InvalidAxisGet2_cvt_JScript_V11(): void;
+    function test_Chart2_ObjectPeristenceSeries_cvt_JScript_V11(): void;
+    function test_Chart2_ObjectPeristencePointsSet_cvt_JScript_V11(): void;
+    function test_Chart2_ObjectPeristencePointsLoad_cvt_JScript_V11(): void;
+    function test_Chart2_DataPointValues1_cvt_JScript_V11(): void;
+    function test_Chart2_GetOutOfBoundsSeries1_cvt_JScript_V11(): void;
+    function test_Chart2_GetOutOfBoundsSeries2_cvt_JScript_V11(): void;
+    function test_Chart2_GetOutOfBoundsPoints1_cvt_JScript_V11(): void;
+    function test_Chart2_GetOutOfBoundsPoints2_cvt_JScript_V11(): void;
+    function test_Chart2_SeriesCount_cvt_JScript_V14(): void;
+    function test_Chart2_PointsCount_cvt_JScript_V14(): void;
+    function test_Chart2_PointGetAndSetHasDataLabels_cvt_JScript_V18(): void;
+    function test_Chart2_PointGetAndSetMarkerSize_cvt_JScript_V18(): void;
+    function test_Chart2_PointGetAndSetMarkerStyle_cvt_JScript_V18(): void;
+    function test_Chart2_PointGetAndSetMarkerBackgroundColor_cvt_JScript_V18(): void;
+    function test_Chart2_PointGetAndSetMarkerForegroundColor_cvt_JScript_V18(): void;
+    function test_Chart2_HoldOnToChartElementAcrossAsyncRequest1_cvt_JScript_V11(): void;
+    function test_Chart2_HoldOnToChartElementAcrossAsyncRequest2_cvt_JScript_V11(): void;
+    function test_Chart2_TitleEmpty_cvt_JScript_V11(): void;
+    function test_Chart2_TitleLocale_cvt_JScript_V11(): void;
+    function test_Chart2_TitleLocaleRightToLeft_cvt_JScript_V11(): void;
+    function test_Chart2_TitleHiddenFont_cvt_JScript_V11(): void;
+    function test_Chart2_NameGetterDup_cvt_JScript_V11(): void;
+    function test_Chart2_NameGetterNoChart_cvt_JScript_V11(): void;
+    function test_Chart2_DeleteDupName_cvt_JScript_V11(): void;
+    function test_Chart2_List_cvt_JScript_V11(): void;
+    function test_Chart2_SeriesUpdate_cvt_JScript_V11(): void;
+    function test_Chart2_NameLocale_cvt_JScript_V11(): void;
+    function test_Chart2_NameLocaleRightToLeft_cvt_JScript_V11(): void;
+    function test_Chart2_DeleteAdd_cvt_JScript_V11(): void;
+    function test_Chart2_DatasourceUpdatedToNull_cvt_JScript_V11(): void;
+    function test_Chart2_DatasourceUpdatedToStringInvalid_cvt_JScript_V11(): void;
+    function test_Chart2_DatasourceNull_cvt_JScript_V11(): void;
+    function test_Chart2_DatasourceRangeCleared_cvt_JScript_V11(): void;
+    function test_Chart2_DatasourceUnbounded_cvt_JScript_V11(): void;
+    function test_Chart2_TrendlinesGetCount_cvt_JScript_V18(): void;
+    function test_Chart2_GetTrendlineProperty_cvt_JScript_V18(): void;
+    function test_Chart2_SetTrendlineProperty_cvt_JScript_V18(): void;
+    function test_Chart2_AddSeries_cvt_JScript_V18(): void;
+    function test_Chart2_DeleteSeries_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetChartType_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetDoughnutHoleSize$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesSetDoughnutHoleSizeForInvalidChartType$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetFiltered_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetGapWidth$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesSetGapWidthForInvalidChartType$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetHasDataLabels_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetMarkerSize_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetMarkerStyle_cvt_JScript_V18(): void;
+    function test_Chart2_SeriesGetAndSetShowShadow$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetMarkerBackgroundColor$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetMarkerForegroundColor$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesSetMarkerForegroundColorForInvalidType$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetPlotOrder$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesGetAndSetSmooth$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_SeriesSetSmoothForInvalidType$AsyncAwait_cvt_JScript_V18(): Promise<void>;
+    function test_Chart2_GetAndSetAxisPropertyOnCategoryAxis_cvt_JScript_V18(): void;
+    function test_Chart2_GetAxisPropertyOnValueAxis_cvt_JScript_V18(): void;
+    function test_Chart2_GetAxisPositionAndSizeProperties_cvt_JScript_V18(): void;
+    function test_Chart2_SetAndGetAxisCrossAndPlotOrderProperties_cvt_JScript_V18(): void;
+    function test_Chart2_SetAndGetAxisTickProperties_cvt_JScript_V18(): void;
+    function test_Chart2_SetPolynomialOrderToLinearTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_SetMovingAveragePeriodToLinearTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_TrendlineSetAndGetForwardAndBackward_cvt_JScript_V18(): void;
+    function test_Chart2_SetForwardOnMovingAverageTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_SetBackwardOnMovingAverageTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_DeleteTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_TrendlineSetAndGetDisplayEquationAndDisplayRSquared_cvt_JScript_V18(): void;
+    function test_Chart2_SetDisplayEquationOnMovingAverageTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_SetDisplayRSquaredOnMovingAverageTrendline_cvt_JScript_V18(): void;
+    function test_Chart2_TrendlineSetAndGetName_cvt_JScript_V18(): void;
+    function test_Chart2_TrendlineSetAndGetIntercept_cvt_JScript_V18(): void;
+    function test_Chart2_SetInterceptOnWrongTypeTrendline_cvt_JScript_V18(): void;
+}
+declare module ExcelTest {
+    function test_Chart_FormattingPieChartScenario_cvt_JScript_V11(): void;
+    function test_Chart_FormattingPieChartDataCalloutsScenario_cvt_JScript_V11(): void;
+    function test_Chart_FormattingColumnChartScenario_cvt_JScript_V11(): void;
+    function test_Chart_FormattingLineGraphScenario_cvt_JScript_V11(): void;
+    function test_Chart_FormattingLinePropertyOnColumnSeriesScenario_cvt_JScript_V11(): void;
+    function test_Chart_FontNameSetToInvalid_cvt_JScript_V11(): void;
+    function test_Chart_FontNameIgnoresCapitalization_cvt_JScript_V11(): void;
+    function test_Chart_FontPropertyRetrieval_cvt_JScript_V11(): void;
+    function test_Chart_FontApplicationOrderingMatters1_cvt_JScript_V11(): void;
+    function test_Chart_FontApplicationOrderingMatters2_cvt_JScript_V11(): void;
+    function test_Chart_FontPropertyRetrievalOnNonExistantObject_cvt_JScript_V11(): void;
+    function test_Chart_SetAndGetTitleHorizontalAlignment_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleHorizontalAlignmentWithNull_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleTextOrientation_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitlePosition_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleShowShadow_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleTopLeft_cvt_JScript_V18(): void;
+    function test_Chart_GetTitleWidthHeight_cvt_JScript_V18(): void;
+    function test_Chart_SetTitleFormula_cvt_JScript_V18(): void;
+    function test_Chart_SetTitleVerticalAlignmentInvalidOperation_cvt_JScript_V18(): void;
+    function test_Chart_GetTitleVerticalAlignmentCenter_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleVerticalAlignmentTop_cvt_JScript_V18(): void;
+    function test_Chart_SetAndGetTitleSubstringFontProperty_cvt_JScript_V18(): void;
+    function test_Chart_LineFormatting_cvt_JScript_V11(): void;
+    function test_Chart_FontNameNull_cvt_JScript_V11(): void;
+    function test_Chart_FontNameEmpty_cvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_ConditionalFormats_BasicRangeCount_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_LoadAllFormats_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetRangeLargerThanCurrentCell_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetRangeRangeSmallerThanSelection_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetStopIfTrue_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetStopIfTrueFail_cvt_JSCript_V16(): void;
+    function test_ConditionalFormats_GetPriorityBasic_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetPriorityBasic_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetPriorityGreaterThanMax_cvt_JSCript_V16(): void;
+    function test_ConditionalFormats_SetPriorityNegative_cvt_JSCript_V16(): void;
+    function test_ConditionalFormats_GetType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarShowValue_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarShowValue_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarBarDirection_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarDirection_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarAxisFormat_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarAxisFormat_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarNoAxisColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarAxisColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarPositiveFormatNoBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatBorderNamedColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatRemoveBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarPositiveFormatColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarPositiveFormatGradient_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatGradient_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarNegativeFormatColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarNegativeFormatBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatBorderNamedColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarNegativeFormatMatchPositiveBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatMatchPositiveBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatBorderColorSetsMatchPositiveBorderColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarNegativeFormatMatchPositiveFillColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatMatchPositiveFillColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarLowerBoundRuleType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarLowerBoundRuleType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarFormulaRange_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_GetDatabarFormulaNumeric_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarFormulaRange_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarFormulaString_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarAutomaticFormula_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarNumberNumeric_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentile_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentileOver100_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentileUnder0_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentileNumAsString_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentileRef_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercent_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarPercentRef_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarHighestValue_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarHighestValueFormula_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_SetDatabarLowestValue_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_AddDatabarConditionalFormat_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatNumberFormat_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatNumberFormatClear_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFillColor_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFillColorClear_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontBold_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontBoldTrueItalicFalse_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontBoldAndItalic_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontStrikethrough_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontBoldAndUnderline_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontColorDefault_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatFontSetAllThenClear_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatBorderDifferentStyles1_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomFormatBorderDifferentStyles2_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomConditionalFormatFormulaR1C1_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CustomConditionalFormatNumberRule_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconGet_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconGetIconOnly_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconGetReverseOrder_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconGetFormulaNumber_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetReverseOrder_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetShowIconOnly_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetCriteria_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetNoOpOn0CriteriaExceptIcon_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetSomeCriteria_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetCriteriaInvalidOperator_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetCriteriaInvalidType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetSomeTooManyCriteria_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetStyleFourRating_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetStyleFiveBoxes_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IconSetSetStyleFiveBoxesThenFour_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_AddColorScaleConditionalFormat_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesSetLowestValueTypeToMaxFail_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesChangeMinType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesChangeMaxType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesChangeMaxTypeFormula_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesChangeMidType_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_ColorScalesFrom3to2_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TopBottomAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TopBottomSetPercent_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TopBottomSetRank2_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TopBottomSetBottom2_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TomBottomRankTooHigh_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TomBottomPercentTooHigh_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TomBottomRankTooLow_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_AverageSetBelow_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_AverageSetAboveOrEqual_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_AverageSet2StdevAbove_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_UniqueAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_UniqueSetDuplicate_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PresetBlankAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PresetNonBlank_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PresetError_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PresetNonErrors_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PresetTimeToday_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TextContainsAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TextNotContains_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TextChangeText_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_TextChangeTextFormula_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueBetweenAdd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueEqualTo_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueNotBetween_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueGreaterThan_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueLessThanOrEqual_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_CellValueBetween_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PriorityToFront_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PriorityToEnd_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PriorityTopToMiddle_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_PriorityBackToMiddle_cvt_JScript_V16(): void;
+    function test_ConditionalFormats_IdAfterAdd_cvt_JScript_V16(): void;
+}
+declare module ExcelTest {
+    function addThreeNumbers(a: any, b: any, c: any): any;
+    function AddArrayNumbersAndNumber(array: Array<Array<any>>, num: number): number;
+    function ReturnArrayNumbers(unused: any): number[][];
+    function errorOut(how: string): any;
+    function add2Batch(argsArray: Array<Array<any>>): any[];
+    function incrementStream(init: number, step: number, frequency: number, invocationContext: Excel.InvocationContext): number;
+    function incrementStreamBatch(argsArray: Array<Array<any>>): void;
+    function incrementStreamCancelable(init: number, step: number, frequency: number, invocationContext: Excel.InvocationContext): void;
+    const expectedTimeoutMilliseconds: number;
+    function test_CustomFunctions_Add_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_SetFormulas2_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_SetFormulas5_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_ErrorOutThrow_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_ErrorOutPromise_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Batch_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_BatchStream_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_CancellableStream_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_DimMatrixParamAdd_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_DimMatrixParamSetFormulas_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_DimMatrixReturnAdd_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_DimMatrixReturnSetFormulas_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Invoke_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_AddAll_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Items_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Delete_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_DeleteAll_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Count_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Get_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_GetNull_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Paramters_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_ZeroParamters_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Serialize_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Deserialize_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function test_CustomFunctions_Perf_cvt_JScript_V11CustomFunctions(): Promise<void>;
+    function customFunctions_Execute(ctx: any, arrayOfFormulas: any, expectedTimeout: number): Promise<{}>;
+    function customFunctions_PerfHelper(ctx: any, numberOfFunctions: number, functionName: string, functionParameters: string, expectedTimeout: number): Promise<void>;
+    function customFunctions_ConvertTicksToMicroseconds(higherTocks: number, lowerTicks: number): number;
+}
+declare module ExcelTest {
+    function test_CustomXmlParts_GetAll_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_Add_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_Update_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_Delete_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetByNamespace_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_CantGetByNamespace_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetByNamespaceById_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_CantGetByNamespaceById_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetItemOrNullObjectFromFullCollection_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_CantGetItemOrNullObjectFromFullCollection_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetItemOrNullObjectFromScopedCollection_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_CantGetItemOrNullObjectFromScopedCollection_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem0_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem1_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem2_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItemOrNullObject0_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItemOrNullObject1_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetOnlyItemOrNullObject2_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetCountAll_cvt_JScript_V15(): void;
+    function test_CustomXmlParts_GetCountScoped_cvt_JScript_V15(): void;
+}
+declare module ExcelTest {
+    function test_DocumentProperties_SetAndGetBuiltInDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_GetReadOnlyBuiltInDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_SetInvalidRevisionNumber_cvt_JScript_V17(): Promise<void>;
+    function test_DocumentProperties_AddCustomDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_GetCustomDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_DeleteCustomDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_ChangeCustomDocumentPropertiesValueWithSameType_cvt_JScript_V17(): void;
+    function test_DocumentProperties_ChangeCustomDocumentPropertiesValueWithDifferentType_cvt_JScript_V17(): void;
+    function test_DocumentProperties_GetCountOfCustomDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_DeleteAllCustomDocumentProperties_cvt_JScript_V17(): void;
+    function test_DocumentProperties_EnumOperationOfCustomDocumentProperties_cvt_JScript_V17(): void;
+}
+declare module ExcelTest {
+    function test_DataValidation_SetWholeNumberDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetWholeNumberDVInvalidMinMax$Fail_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetWholeNumberDVInvalidDataType$Fail_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDataValidationToTwoRulesSimultaneously$Fail_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVWithRelativeRefFormula_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVWithAbosoluteRefFormula_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVInRangeContainMultipleDVs$Fail_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDecimalDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVWithAlertPromt_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDateDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDateRef_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDateDVInvalidDate$Fail_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetTimeDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetListDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetListDVSourceCellAbosolute_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetListDVRangeSourceRelative_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetListSourceNamedRange_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetCustomDV_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVAndClear_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_AddWholeNumberDVEditPartial_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_EditPartiatDVParams_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_DVDefaultValueTest_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetWriteEmptyDataValidation_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetDVNullTest_cvt_JScript_V17(): Promise<void>;
+    function test_DataValidation_SetRuleToNullToDeleteDV_cvt_JScript_V17(): Promise<void>;
+}
+declare module ExcelTest {
+    module FunctionsHelper {
+        /**
+         Validate function against an Excel formula. The test uses Sheet2's cell "A1", so make sure to a) fully-qualify all references b) not to use Sheet2
+         @param formula - Formula to write in. It will get written to cell A1, so don't use a formula that makes use of the value written to it!
+         @param action - function-result-returning action that is the body of the test. Can return either a FunctionResult directly or a promise for one
+         @param optionals - optional param to document what the expected result should be, and to provide additional validation. Realistically the Excel formula evaluation is the true source of truth, but it doesn't hurt to validate tester's intentions
+         */
+        function validateAgainstExcelFormula(formula: string, action: (ctx: Excel.RequestContext) => Excel.FunctionResult<any>, optionals?: {
+            expectedResult?: any;
+            allowableMarginOfError?: number;
+        }): any;
+        /**
+         Validate function against an Excel formula, running a setup action first. The test uses Sheet2's cell "A1", so make sure to a) fully-qualify all references b) not to use Sheet2
+         @param setupAction - a fully synchronous (no async reading back values!) function to prepare for a test.  E.g., clear a range, set values, etc.
+         @param formula - Formula to write in. It will get written to cell A1, so don't use a formula that makes use of the value written to it!
+         @param action - function-result-returning action that is the body of the test. Can return either a FunctionResult directly or a promise for one
+         @param optionals - optional param to document what the expected result should be (if desired for double-checking), allowableMarginOfError
+         */
+        function validateAgainstExcelFormula(setupAction: (ctx: Excel.RequestContext) => void, formula: string, action: (ctx: Excel.RequestContext) => Excel.FunctionResult<any> | OfficeExtension.IPromise<Excel.FunctionResult<any>>, optionals?: {
+            expectedResult?: any;
+            allowableMarginOfError?: number;
+        }): any;
+    }
+    function test_Functions_BasicNumberArrayTest_bvt_JScript_V12(): void;
+    function test_Functions_StringAndRangeAndBoolArguments_bvt_JScript_V12(): void;
+    function test_Functions_WillExtractValueFromRangeIfNeeded_bvt_JScript_V12(): void;
+    function test_Functions_AllowRangeObjectsAsPartOfArrayTest_cvt_JScript_V12(): void;
+    function test_Functions_Coercion_cvt_JScript_V12(): void;
+    function test_Functions_FailOnMoreThan255Arguments_cvt_JScript_V12(): void;
+    function test_Functions_AllowOptionalParams_cvt_JScript_V12(): void;
+    function test_Functions_ChainingResults_cvt_JScript_V12(): void;
+    function test_Functions_CanUseResultValuesAcrossRequests_cvt_JScript_V12(): void;
+    function test_Functions_CannotUseResultObjectsAcrossRequests_cvt_JScript_V12(): void;
+    function test_Functions_FailOnInsufficientParameterCount_cvt_JScript_V12(): void;
+    function test_Functions_AllowNullAsPartOfArgument_cvt_JScript_V12(): void;
+    function test_Functions_ErrorsAreSurfaced_cvt_JScript_V12(): void;
+    function test_Functions_ErrorsCanBeChained1_cvt_JScript_V12(): void;
+    function test_Functions_ErrorsCanBeChained2_cvt_JScript_V12(): void;
+    function test_Functions_ValueExtractionOnlyForSingleCell_cvt_JScript_V12(): void;
+    function test_Functions_CanUseComplexTypeInJavascriptToo_cvt_JScript_V12(): void;
+    function test_Functions_$Count_cvt_JScript_V12(): void;
+    function test_Functions_$If_cvt_JScript_V12(): void;
+    function test_Functions_$If$ChainedResult_cvt_JScript_V12(): void;
+    function test_Functions_$If$Only2ArgsTrueCase_cvt_JScript_V12(): void;
+    function test_Functions_$If$Only2ArgsFalseCase_cvt_JScript_V12(): void;
+    function test_Functions_$If$MissedArgumentForTrue_cvt_JScript_V12(): void;
+    function test_Functions_$IsNA$false_cvt_JScript_V12(): void;
+    function test_Functions_$IsNA$true_cvt_JScript_V12(): void;
+    function test_Functions_$IsError$false_cvt_JScript_V12(): void;
+    function test_Functions_$IsError$true$NA_cvt_JScript_V12(): void;
+    function test_Functions_$IsError$true$DIV0_cvt_JScript_V12(): void;
+    function test_Functions_$Sum_cvt_JScript_V12(): void;
+    function test_Functions_$Average_cvt_JScript_V12(): void;
+    function test_Functions_$Min_cvt_JScript_V12(): void;
+    function test_Functions_$Max_cvt_JScript_V12(): void;
+    function test_Functions_$Na_cvt_JScript_V12(): void;
+    function test_Functions_$Npv_cvt_JScript_V12(): void;
+    function test_Functions_$Dollar_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed$NoCommas$True_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed$NoCommas$False_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed$SkipMiddleArgument$False_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed$WillFailOnWrongArgumentTypePassed$InNotANumber_cvt_JScript_V12(): void;
+    function test_Functions_$Fixed$WillFailOnWrongArgumentTypePassed$NumberAsString_cvt_JScript_V12(): void;
+    function test_Functions_$Sin_cvt_JScript_V12(): void;
+    function test_Functions_$Cos_cvt_JScript_V12(): void;
+    function test_Functions_$Tan_cvt_JScript_V12(): void;
+    function test_Functions_$Atan_cvt_JScript_V12(): void;
+    function test_Functions_$Pi_cvt_JScript_V12(): void;
+    function test_Functions_$Sqrt_cvt_JScript_V12(): void;
+    function test_Functions_$Exp_cvt_JScript_V12(): void;
+    function test_Functions_$Ln_cvt_JScript_V12(): void;
+    function test_Functions_$Log10_cvt_JScript_V12(): void;
+    function test_Functions_$Abs_cvt_JScript_V12(): void;
+    function test_Functions_$Int_cvt_JScript_V12(): void;
+    function test_Functions_$Int$WillRequireNumber_cvt_JScript_V12(): void;
+    function test_Functions_$Sign_cvt_JScript_V12(): void;
+    function test_Functions_$Round_cvt_JScript_V12(): void;
+    function test_Functions_$Lookup_cvt_JScript_V12(): void;
+    function test_Functions_$Rept_cvt_JScript_V12(): void;
+    function test_Functions_$Rept$NegativeIndex_cvt_JScript_V12(): void;
+    function test_Functions_$Mid_cvt_JScript_V12(): void;
+    function test_Functions_$Mid$NegativeIndex_cvt_JScript_V12(): void;
+    function test_Functions_$Len_cvt_JScript_V12(): void;
+    function test_Functions_$Len$BlankCell_cvt_JScript_V12(): void;
+    function test_Functions_$Value_cvt_JScript_V12(): void;
+    function test_Functions_$Value$WrongInput_cvt_JScript_V12(): void;
+    function test_Functions_$Value$FromBlankCell_cvt_JScript_V12(): void;
+    function test_Functions_$True_cvt_JScript_V12(): void;
+    function test_Functions_$False_cvt_JScript_V12(): void;
+    function test_Functions_$And_cvt_JScript_V12(): void;
+    function test_Functions_$Or_cvt_JScript_V12(): void;
+    function test_Functions_$Not_cvt_JScript_V12(): void;
+    function test_Functions_$Not$PureValue_cvt_JScript_V12(): void;
+    function test_Functions_$Not$FailsOnMultiAreaRange_cvt_JScript_V12(): void;
+    function test_Functions_$Mod_cvt_JScript_V12(): void;
+    function test_Functions_$DCount_cvt_JScript_V12(): void;
+    function test_Functions_$DSum_cvt_JScript_V12(): void;
+    function test_Functions_$DAverage_cvt_JScript_V12(): void;
+    function test_Functions_$DMin_cvt_JScript_V12(): void;
+    function test_Functions_$DMax_cvt_JScript_V12(): void;
+    function test_Functions_$DStDev_cvt_JScript_V12(): void;
+    function test_Functions_$DVar_cvt_JScript_V12(): void;
+    function test_Functions_$Text_cvt_JScript_V12(): void;
+    function test_Functions_$Pv_cvt_JScript_V12(): void;
+    function test_Functions_$Fv_cvt_JScript_V12(): void;
+    function test_Functions_$NPer_cvt_JScript_V12(): void;
+    function test_Functions_$Pmt_cvt_JScript_V12(): void;
+    function test_Functions_$Rate_cvt_JScript_V12(): void;
+    function test_Functions_$MIrr_cvt_JScript_V12(): void;
+    function test_Functions_$Irr_cvt_JScript_V12(): void;
+    function test_Functions_$Rand_cvt_JScript_V12(): void;
+    function test_Functions_$Match_cvt_JScript_V12(): void;
+    function test_Functions_$Date_cvt_JScript_V12(): void;
+    function test_Functions_$Time_cvt_JScript_V12(): void;
+    function test_Functions_$Day_cvt_JScript_V12(): void;
+    function test_Functions_$Month_cvt_JScript_V12(): void;
+    function test_Functions_$Year_cvt_JScript_V12(): void;
+    function test_Functions_$Weekday_cvt_JScript_V12(): void;
+    function test_Functions_$Hour_cvt_JScript_V12(): void;
+    function test_Functions_$Minute_cvt_JScript_V12(): void;
+    function test_Functions_$Second_cvt_JScript_V12(): void;
+    function test_Functions_$Now_cvt_JScript_V12(): void;
+    function test_Functions_$Areas_cvt_JScript_V12(): void;
+    function test_Functions_$Rows_cvt_JScript_V12(): void;
+    function test_Functions_$Columns_cvt_JScript_V12(): void;
+    function test_Functions_$Type_cvt_JScript_V12(): void;
+    function test_Functions_$Atan2_cvt_JScript_V12(): void;
+    function test_Functions_$Asin_cvt_JScript_V12(): void;
+    function test_Functions_$Acos_cvt_JScript_V12(): void;
+    function test_Functions_$Choose_cvt_JScript_V12(): void;
+    function test_Functions_$HLookup_cvt_JScript_V12(): void;
+    function test_Functions_$VLookup_cvt_JScript_V12(): void;
+    function test_Functions_$Isref_cvt_JScript_V12(): void;
+    function test_Functions_$Log_cvt_JScript_V12(): void;
+    function test_Functions_$Char_cvt_JScript_V12(): void;
+    function test_Functions_$Lower_cvt_JScript_V12(): void;
+    function test_Functions_$Upper_cvt_JScript_V12(): void;
+    function test_Functions_$Proper_cvt_JScript_V12(): void;
+    function test_Functions_$Left_cvt_JScript_V12(): void;
+    function test_Functions_$Right_cvt_JScript_V12(): void;
+    function test_Functions_$Exact_cvt_JScript_V12(): void;
+    function test_Functions_$Trim_cvt_JScript_V12(): void;
+    function test_Functions_$Replace_cvt_JScript_V12(): void;
+    function test_Functions_$Substitute_cvt_JScript_V12(): void;
+    function test_Functions_$Code_cvt_JScript_V12(): void;
+    function test_Functions_$Find_cvt_JScript_V12(): void;
+    function test_Functions_$IsErr_cvt_JScript_V12(): void;
+    function test_Functions_$IsText_cvt_JScript_V12(): void;
+    function test_Functions_$IsNumber_cvt_JScript_V12(): void;
+    function test_Functions_$T_cvt_JScript_V12(): void;
+    function test_Functions_$N_cvt_JScript_V12(): void;
+    function test_Functions_$Datevalue_cvt_JScript_V12(): void;
+    function test_Functions_$Timevalue_cvt_JScript_V12(): void;
+    function test_Functions_$Sln_cvt_JScript_V12(): void;
+    function test_Functions_$Syd_cvt_JScript_V12(): void;
+    function test_Functions_$Ddb_cvt_JScript_V12(): void;
+    function test_Functions_$Clean_cvt_JScript_V12(): void;
+    function test_Functions_$Ipmt_cvt_JScript_V12(): void;
+    function test_Functions_$Ppmt_cvt_JScript_V12(): void;
+    function test_Functions_$CountA_cvt_JScript_V12(): void;
+    function test_Functions_$Product_cvt_JScript_V12(): void;
+    function test_Functions_$Fact_cvt_JScript_V12(): void;
+    function test_Functions_$DProduct_cvt_JScript_V12(): void;
+    function test_Functions_$IsNonText_cvt_JScript_V12(): void;
+    function test_Functions_$DVarP_cvt_JScript_V12(): void;
+    function test_Functions_$Trunc_cvt_JScript_V12(): void;
+    function test_Functions_$IsLogical_cvt_JScript_V12(): void;
+    function test_Functions_$DCountA_cvt_JScript_V12(): void;
+    function test_Functions_$USDollar_cvt_JScript_V12(): void;
+    function test_Functions_$FindB_cvt_JScript_V12(): void;
+    function test_Functions_$ReplaceB_cvt_JScript_V12(): void;
+    function test_Functions_$Leftb_cvt_JScript_V12(): void;
+    function test_Functions_$Rightb_cvt_JScript_V12(): void;
+    function test_Functions_$Midb_cvt_JScript_V12(): void;
+    function test_Functions_$Lenb_cvt_JScript_V12(): void;
+    function test_Functions_$RoundUp_cvt_JScript_V12(): void;
+    function test_Functions_$RoundDown_cvt_JScript_V12(): void;
+    function test_Functions_$Asc_cvt_JScript_V12(): void;
+    function test_Functions_$Dbcs_cvt_JScript_V12(): void;
+    function test_Functions_$Days360_cvt_JScript_V12(): void;
+    function test_Functions_$Today_cvt_JScript_V12(): void;
+    function test_Functions_$Vdb_cvt_JScript_V12(): void;
+    function test_Functions_$Median_cvt_JScript_V12(): void;
+    function test_Functions_$Sinh_cvt_JScript_V12(): void;
+    function test_Functions_$Cosh_cvt_JScript_V12(): void;
+    function test_Functions_$Tanh_cvt_JScript_V12(): void;
+    function test_Functions_$Asinh_cvt_JScript_V12(): void;
+    function test_Functions_$Acosh_cvt_JScript_V12(): void;
+    function test_Functions_$Atanh_cvt_JScript_V12(): void;
+    function test_Functions_$DGet_cvt_JScript_V12(): void;
+    function test_Functions_$Db_cvt_JScript_V12(): void;
+    function test_Functions_$ErrorType_cvt_JScript_V12(): void;
+    function test_Functions_$AveDev_cvt_JScript_V12(): void;
+    function test_Functions_$GammaLn_cvt_JScript_V12(): void;
+    function test_Functions_$Combin_cvt_JScript_V12(): void;
+    function test_Functions_$Even_cvt_JScript_V12(): void;
+    function test_Functions_$Fisher_cvt_JScript_V12(): void;
+    function test_Functions_$FisherInv_cvt_JScript_V12(): void;
+    function test_Functions_$Standardize_cvt_JScript_V12(): void;
+    function test_Functions_$Odd_cvt_JScript_V12(): void;
+    function test_Functions_$Permut_cvt_JScript_V12(): void;
+    function test_Functions_$DevSq_cvt_JScript_V12(): void;
+    function test_Functions_$GeoMean_cvt_JScript_V12(): void;
+    function test_Functions_$HarMean_cvt_JScript_V12(): void;
+    function test_Functions_$SumSq_cvt_JScript_V12(): void;
+    function test_Functions_$Kurt_cvt_JScript_V12(): void;
+    function test_Functions_$Skew_cvt_JScript_V12(): void;
+    function test_Functions_$Large_cvt_JScript_V12(): void;
+    function test_Functions_$Small_cvt_JScript_V12(): void;
+    function test_Functions_$TrimMean_cvt_JScript_V12(): void;
+    function test_Functions_$Concatenate_cvt_JScript_V12(): void;
+    function test_Functions_$Power_cvt_JScript_V12(): void;
+    function test_Functions_$Radians_cvt_JScript_V12(): void;
+    function test_Functions_$Degrees_cvt_JScript_V12(): void;
+    function test_Functions_$Subtotal_cvt_JScript_V12(): void;
+    function test_Functions_$SumIf_cvt_JScript_V12(): void;
+    function test_Functions_$CountIf_cvt_JScript_V12(): void;
+    function test_Functions_$CountBlank_cvt_JScript_V12(): void;
+    function test_Functions_$Ispmt_cvt_JScript_V12(): void;
+    function test_Functions_$Roman_cvt_JScript_V12(): void;
+    function test_Functions_$Hyperlink_cvt_JScript_V12(): void;
+    function test_Functions_$AverageA_cvt_JScript_V12(): void;
+    function test_Functions_$MaxA_cvt_JScript_V12(): void;
+    function test_Functions_$MinA_cvt_JScript_V12(): void;
+    function test_Functions_$StDevPA_cvt_JScript_V12(): void;
+    function test_Functions_$VarPA_cvt_JScript_V12(): void;
+    function test_Functions_$StDevA_cvt_JScript_V12(): void;
+    function test_Functions_$VarA_cvt_JScript_V12(): void;
+    function test_Functions_$BahtText_cvt_JScript_V12(): void;
+    function test_Functions_$Hex2Bin_cvt_JScript_V12(): void;
+    function test_Functions_$Hex2Dec_cvt_JScript_V12(): void;
+    function test_Functions_$Hex2Oct_cvt_JScript_V12(): void;
+    function test_Functions_$Dec2Bin_cvt_JScript_V12(): void;
+    function test_Functions_$Dec2Hex_cvt_JScript_V12(): void;
+    function test_Functions_$Dec2Oct_cvt_JScript_V12(): void;
+    function test_Functions_$Oct2Bin_cvt_JScript_V12(): void;
+    function test_Functions_$Oct2Hex_cvt_JScript_V12(): void;
+    function test_Functions_$Oct2Dec_cvt_JScript_V12(): void;
+    function test_Functions_$Bin2Dec_cvt_JScript_V12(): void;
+    function test_Functions_$Bin2Oct_cvt_JScript_V12(): void;
+    function test_Functions_$Bin2Hex_cvt_JScript_V12(): void;
+    function test_Functions_$ImSub_cvt_JScript_V12(): void;
+    function test_Functions_$ImDiv_cvt_JScript_V12(): void;
+    function test_Functions_$ImPower_cvt_JScript_V12(): void;
+    function test_Functions_$ImAbs_cvt_JScript_V12(): void;
+    function test_Functions_$ImSqrt_cvt_JScript_V12(): void;
+    function test_Functions_$ImLn_cvt_JScript_V12(): void;
+    function test_Functions_$ImLog2_cvt_JScript_V12(): void;
+    function test_Functions_$ImLog10_cvt_JScript_V12(): void;
+    function test_Functions_$ImSin_cvt_JScript_V12(): void;
+    function test_Functions_$ImCos_cvt_JScript_V12(): void;
+    function test_Functions_$ImExp_cvt_JScript_V12(): void;
+    function test_Functions_$ImArgument_cvt_JScript_V12(): void;
+    function test_Functions_$ImConjugate_cvt_JScript_V12(): void;
+    function test_Functions_$Imaginary_cvt_JScript_V12(): void;
+    function test_Functions_$ImReal_cvt_JScript_V12(): void;
+    function test_Functions_$Complex_cvt_JScript_V12(): void;
+    function test_Functions_$ImSum_cvt_JScript_V12(): void;
+    function test_Functions_$ImProduct_cvt_JScript_V12(): void;
+    function test_Functions_$SeriesSum_cvt_JScript_V12(): void;
+    function test_Functions_$FactDouble_cvt_JScript_V12(): void;
+    function test_Functions_$SqrtPi_cvt_JScript_V12(): void;
+    function test_Functions_$Quotient_cvt_JScript_V12(): void;
+    function test_Functions_$Delta_cvt_JScript_V12(): void;
+    function test_Functions_$GeStep_cvt_JScript_V12(): void;
+    function test_Functions_$IsEven_cvt_JScript_V12(): void;
+    function test_Functions_$IsOdd_cvt_JScript_V12(): void;
+    function test_Functions_$MRound_cvt_JScript_V12(): void;
+    function test_Functions_$Erf_cvt_JScript_V12(): void;
+    function test_Functions_$ErfC_cvt_JScript_V12(): void;
+    function test_Functions_$BesselJ_cvt_JScript_V12(): void;
+    function test_Functions_$BesselK_cvt_JScript_V12(): void;
+    function test_Functions_$BesselY_cvt_JScript_V12(): void;
+    function test_Functions_$BesselI_cvt_JScript_V12(): void;
+    function test_Functions_$Xirr_cvt_JScript_V12(): void;
+    function test_Functions_$Xnpv_cvt_JScript_V12(): void;
+    function test_Functions_$PriceMat_cvt_JScript_V12(): void;
+    function test_Functions_$YieldMat_cvt_JScript_V12(): void;
+    function test_Functions_$IntRate_cvt_JScript_V12(): void;
+    function test_Functions_$Received_cvt_JScript_V12(): void;
+    function test_Functions_$Disc_cvt_JScript_V12(): void;
+    function test_Functions_$PriceDisc_cvt_JScript_V12(): void;
+    function test_Functions_$YieldDisc_cvt_JScript_V12(): void;
+    function test_Functions_$TBillEq_cvt_JScript_V12(): void;
+    function test_Functions_$TBillPrice_cvt_JScript_V12(): void;
+    function test_Functions_$TBillYield_cvt_JScript_V12(): void;
+    function test_Functions_$Price_cvt_JScript_V12(): void;
+    function test_Functions_$Yield_cvt_JScript_V12(): void;
+    function test_Functions_$DollarDe_cvt_JScript_V12(): void;
+    function test_Functions_$DollarFr_cvt_JScript_V12(): void;
+    function test_Functions_$Nominal_cvt_JScript_V12(): void;
+    function test_Functions_$Effect_cvt_JScript_V12(): void;
+    function test_Functions_$CumPrinc_cvt_JScript_V12(): void;
+    function test_Functions_$CumIPmt_cvt_JScript_V12(): void;
+    function test_Functions_$EDate_cvt_JScript_V12(): void;
+    function test_Functions_$EoMonth_cvt_JScript_V12(): void;
+    function test_Functions_$YearFrac_cvt_JScript_V12(): void;
+    function test_Functions_$CoupDays_cvt_JScript_V12(): void;
+    function test_Functions_$CoupDaysNc_cvt_JScript_V12(): void;
+    function test_Functions_$CoupNcd_cvt_JScript_V12(): void;
+    function test_Functions_$CoupNum_cvt_JScript_V12(): void;
+    function test_Functions_$CoupPcd_cvt_JScript_V12(): void;
+    function test_Functions_$Duration_cvt_JScript_V12(): void;
+    function test_Functions_$MDuration_cvt_JScript_V12(): void;
+    function test_Functions_$OddLPrice_cvt_JScript_V12(): void;
+    function test_Functions_$OddLYield_cvt_JScript_V12(): void;
+    function test_Functions_$OddFPrice_cvt_JScript_V12(): void;
+    function test_Functions_$OddFYield_cvt_JScript_V12(): void;
+    function test_Functions_$RandBetween_cvt_JScript_V12(): void;
+    function test_Functions_$WeekNum_cvt_JScript_V12(): void;
+    function test_Functions_$AmorDegrc_cvt_JScript_V12(): void;
+    function test_Functions_$AmorLinc_cvt_JScript_V12(): void;
+    function test_Functions_$Convert_cvt_JScript_V12(): void;
+    function test_Functions_$AccrInt_cvt_JScript_V12(): void;
+    function test_Functions_$AccrIntM_cvt_JScript_V12(): void;
+    function test_Functions_$WorkDay_cvt_JScript_V12(): void;
+    function test_Functions_$NetworkDays_cvt_JScript_V12(): void;
+    function test_Functions_$Gcd_cvt_JScript_V12(): void;
+    function test_Functions_$MultiNomial_cvt_JScript_V12(): void;
+    function test_Functions_$Lcm_cvt_JScript_V12(): void;
+    function test_Functions_$FVSchedule_cvt_JScript_V12(): void;
+    function test_Functions_$CountIfs_cvt_JScript_V12(): void;
+    function test_Functions_$SumIfs_cvt_JScript_V12(): void;
+    function test_Functions_$AverageIf_cvt_JScript_V12(): void;
+    function test_Functions_$AverageIfs_cvt_JScript_V12(): void;
+    function test_Functions_$BinomDist_cvt_JScript_V12(): void;
+    function test_Functions_$BinomInv_cvt_JScript_V12(): void;
+    function test_Functions_$ConfidenceNorm_cvt_JScript_V12(): void;
+    function test_Functions_$ConfidenceT_cvt_JScript_V12(): void;
+    function test_Functions_$ExponDist_cvt_JScript_V12(): void;
+    function test_Functions_$GammaDist_cvt_JScript_V12(): void;
+    function test_Functions_$GammaInv_cvt_JScript_V12(): void;
+    function test_Functions_$NormDist_cvt_JScript_V12(): void;
+    function test_Functions_$NormInv_cvt_JScript_V12(): void;
+    function test_Functions_$PercentileExc_cvt_JScript_V12(): void;
+    function test_Functions_$PercentileInc_cvt_JScript_V12(): void;
+    function test_Functions_$PercentRankExc_cvt_JScript_V12(): void;
+    function test_Functions_$PercentRankInc_cvt_JScript_V12(): void;
+    function test_Functions_$PoissonDist_cvt_JScript_V12(): void;
+    function test_Functions_$QuartileExc_cvt_JScript_V12(): void;
+    function test_Functions_$QuartileInc_cvt_JScript_V12(): void;
+    function test_Functions_$RankAvg_cvt_JScript_V12(): void;
+    function test_Functions_$RankEq_cvt_JScript_V12(): void;
+    function test_Functions_$StDevS_cvt_JScript_V12(): void;
+    function test_Functions_$StDevP_cvt_JScript_V12(): void;
+    function test_Functions_$TDist_cvt_JScript_V12(): void;
+    function test_Functions_$TDist2T_cvt_JScript_V12(): void;
+    function test_Functions_$TDistRT_cvt_JScript_V12(): void;
+    function test_Functions_$TInv_cvt_JScript_V12(): void;
+    function test_Functions_$TInv2T_cvt_JScript_V12(): void;
+    function test_Functions_$VarS_cvt_JScript_V12(): void;
+    function test_Functions_$VarP_cvt_JScript_V12(): void;
+    function test_Functions_$WeibullDist_cvt_JScript_V12(): void;
+    function test_Functions_$NetworkDaysIntl_cvt_JScript_V12(): void;
+    function test_Functions_$WorkDayIntl_cvt_JScript_V12(): void;
+    function test_Functions_$ECMACeiling_cvt_JScript_V12(): void;
+    function test_Functions_$ISOCeiling_cvt_JScript_V12(): void;
+    function test_Functions_$BetaDist_cvt_JScript_V12(): void;
+    function test_Functions_$BetaInv_cvt_JScript_V12(): void;
+    function test_Functions_$ChiSqDist_cvt_JScript_V12(): void;
+    function test_Functions_$ChiSqDistRT_cvt_JScript_V12(): void;
+    function test_Functions_$ChiSqInv_cvt_JScript_V12(): void;
+    function test_Functions_$ChiSqInvRT_cvt_JScript_V12(): void;
+    function test_Functions_$FDist_cvt_JScript_V12(): void;
+    function test_Functions_$FDistRT_cvt_JScript_V12(): void;
+    function test_Functions_$FInv_cvt_JScript_V12(): void;
+    function test_Functions_$FInvRT_cvt_JScript_V12(): void;
+    function test_Functions_$HypGeomDist_cvt_JScript_V12(): void;
+    function test_Functions_$LogNormDist_cvt_JScript_V12(): void;
+    function test_Functions_$LogNormInv_cvt_JScript_V12(): void;
+    function test_Functions_$NegBinomDist_cvt_JScript_V12(): void;
+    function test_Functions_$NormSDist_cvt_JScript_V12(): void;
+    function test_Functions_$NormSInv_cvt_JScript_V12(): void;
+    function test_Functions_$ZTest_cvt_JScript_V12(): void;
+    function test_Functions_$ErfPrecise_cvt_JScript_V12(): void;
+    function test_Functions_$ErfCPrecise_cvt_JScript_V12(): void;
+    function test_Functions_$GammaLnPrecise_cvt_JScript_V12(): void;
+    function test_Functions_$CeilingPrecise_cvt_JScript_V12(): void;
+    function test_Functions_$FloorPrecise_cvt_JScript_V12(): void;
+    function test_Functions_$Acot_cvt_JScript_V12(): void;
+    function test_Functions_$Acoth_cvt_JScript_V12(): void;
+    function test_Functions_$Cot_cvt_JScript_V12(): void;
+    function test_Functions_$Coth_cvt_JScript_V12(): void;
+    function test_Functions_$Csc_cvt_JScript_V12(): void;
+    function test_Functions_$Csch_cvt_JScript_V12(): void;
+    function test_Functions_$Sec_cvt_JScript_V12(): void;
+    function test_Functions_$Sech_cvt_JScript_V12(): void;
+    function test_Functions_$ImTan_cvt_JScript_V12(): void;
+    function test_Functions_$ImCot_cvt_JScript_V12(): void;
+    function test_Functions_$ImCsc_cvt_JScript_V12(): void;
+    function test_Functions_$ImCsch_cvt_JScript_V12(): void;
+    function test_Functions_$ImSec_cvt_JScript_V12(): void;
+    function test_Functions_$ImSech_cvt_JScript_V12(): void;
+    function test_Functions_$Bitand_cvt_JScript_V12(): void;
+    function test_Functions_$Bitor_cvt_JScript_V12(): void;
+    function test_Functions_$Bitxor_cvt_JScript_V12(): void;
+    function test_Functions_$Bitlshift_cvt_JScript_V12(): void;
+    function test_Functions_$Bitrshift_cvt_JScript_V12(): void;
+    function test_Functions_$Permutationa_cvt_JScript_V12(): void;
+    function test_Functions_$Combina_cvt_JScript_V12(): void;
+    function test_Functions_$Xor_cvt_JScript_V12(): void;
+    function test_Functions_$PDuration_cvt_JScript_V12(): void;
+    function test_Functions_$Base_cvt_JScript_V12(): void;
+    function test_Functions_$Decimal_cvt_JScript_V12(): void;
+    function test_Functions_$Days_cvt_JScript_V12(): void;
+    function test_Functions_$BinomDistRange_cvt_JScript_V12(): void;
+    function test_Functions_$Gamma_cvt_JScript_V12(): void;
+    function test_Functions_$SkewP_cvt_JScript_V12(): void;
+    function test_Functions_$Gauss_cvt_JScript_V12(): void;
+    function test_Functions_$Phi_cvt_JScript_V12(): void;
+    function test_Functions_$Rri_cvt_JScript_V12(): void;
+    function test_Functions_$Unichar_cvt_JScript_V12(): void;
+    function test_Functions_$Unicode_cvt_JScript_V12(): void;
+    function test_Functions_$Arabic_cvt_JScript_V12(): void;
+    function test_Functions_$IsoWeekNum_cvt_JScript_V12(): void;
+    function test_Functions_$NumberValue_cvt_JScript_V12(): void;
+    function test_Functions_$Sheet_cvt_JScript_V12(): void;
+    function test_Functions_$Sheets_cvt_JScript_V12(): void;
+    function test_Functions_$IsFormula_cvt_JScript_V12(): void;
+    function test_Functions_$CeilingMath_cvt_JScript_V12(): void;
+    function test_Functions_$FloorMath_cvt_JScript_V12(): void;
+    function test_Functions_$ImSinh_cvt_JScript_V12(): void;
+    function test_Functions_$ImCosh_cvt_JScript_V12(): void;
+}
+declare module ExcelTest {
+    function test_GeneralRuntime_Session$ExcelRun_cvt_JScript_V14(): void;
+    function test_GeneralRuntime_Session$ExcelRun$NoArgOnlyWorkInAgave_cvt_JScript_V14(): void;
+    function test_GeneralRuntime_Session$Context_cvt_JScript_V14(): void;
+    function test_GeneralRuntime_Session$Context$NoArgOnlyWorkInAgave_cvt_JScript_V14(): void;
+    function test_GeneralRuntime_RequestContext$UsingSameObjectAcrossRequests_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$DontAllowMixingContexts_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$DontAllowEmptyRun_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$OnlyAllowClientObjectsInArray1_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$OnlyAllowClientObjectsInArray2_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$DontAllowNonFunctionAsBatch1_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$DontAllowNonFunctionAsBatch2_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$SubsequentRequestsBlockedUntilPreviousRunIsDone_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_RequestContext$SubsequentRequestWorksEvenIfFirstOneFailed_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_JsonStringify$Basic_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_JsonStringify$ComplexTypes_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_JsonStringify$Collections_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$RegularJson_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$WithClientObject_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ClientObjectOfWrongSize_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ClientObjectAsPartOfJson_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$WrongClientObjectTypesShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ExtraArgumentsShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$PrivateVariableShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ReadOnlyPropertyWhenDisallowedShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ReadOnlyPropertyWhenExplicitlyDisallowOnClientObjectShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ReadOnlyPropertyWhenAllowedToSkipOverIsOK_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$PropertiesOnParentShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$ShouldBeAbleToSkipUndefined_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$CollectionShouldNotHaveSetMethod_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$SetCollectionThroughParentObjectShouldFail_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$SetCollectionThroughParentObjectShouldFail2_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$SetCollectionThroughParentIsIgnoredInProxyObject_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ObjectSet$SetCollectionThroughParentIsIgnoredInProxyObject$FailsIfThrowOnReadOnlyExplicitlyTrue_cvt_JScript_V11(): Promise<void>;
+    function test_GeneralRuntime_ErrorObjectDebugInfoContainsInnerInfoData_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_CodegenTrackUntrack$GeneratedWhereNeeded_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_CodegenTrackUntrack$NotGeneratedOnNonKeepRefObjects_cvt_JScript_V11(): void;
+    function test_GeneralRuntime_PostProcessAction_cvt_JScript_V17(): OfficeExtension.IPromise<{}>;
+    function test_GeneralRuntime_PostProcessAction$MultipleTimes_cvt_JScript_V17(): OfficeExtension.IPromise<{}>;
+    function test_GeneralRuntime_RequestContextObject$ExcelRun$ReuseRequestContext_cvt_JScript_V18(): Promise<void>;
+    function test_GeneralRuntime_RequestContextObject$ExcelRun$NullArgumentForContext_cvt_JScript_V18(): Promise<void>;
+    function test_GeneralRuntime_FirstPartyMethod_cvt_JScript_V17(): OfficeExtension.IPromise<void>;
+    function test_GeneralRuntime_PendingStatements_cvt_JScript_V17(): void;
+    function test_GeneralRuntime_Retrieve$basic_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_Retrieve$compare_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_RetrievePolyfill$compare_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_RetrieveAndSync$basic_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_RetrieveAndSync$differentSnapshot_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_Update_cvt_JScript_V18(): Promise<void>;
+    function test_GeneralRuntime_RetrieveAndSync$option_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_EnsureUnchanged$success_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_EnsureUnchanged$fail_cvt_JScript_V17(): Promise<void>;
+    function test_GeneralRuntime_demo$filterStudentGrades$setup_cvt_JScript_V17(): OfficeExtension.IPromise<void>;
+    function test_GeneralRuntime_demo$filterStudentGrades$run_cvt_JScript_V17(): OfficeExtension.IPromise<void>;
+    function test_GeneralRuntime_demo$filterStudentGrades$setupError_cvt_JScript_V17(): void;
+    function test_GeneralRuntime_largeNumberOfRanges_cvt_JScript_V17(): void;
+    function test_GeneralRuntime_largeNumberOfRanges$parentChain_cvt_JScript_V17(): void;
+    function test_GeneralRuntime_batch_cvt_JScript_V18(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_IvyChart_Count_cvt_JScript_V11(): void;
+    function test_IvyChart_MoveAndResize_cvt_JScript_V11(): void;
+    function test_IvyChart_ChangeName_cvt_JScript_V11(): void;
+    function test_IvyChart_Deletion_cvt_JScript_V11(): void;
+    function test_IvyChart_NoNavigationProperty_cvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_NamedItem_RangeType_bvt_JScript_V11(): void;
+    function test_NamedItem_NotExists_cvt_JScript_V11(): void;
+    function test_NamedItem_Iterator_cvt_JScript_V11(): void;
+    function test_NamedItem_SingleValueArray_cvt_JScript_V14(): void;
+    function test_NamedItem_Count$WorkbookScope_cvt_JScript_V14(): void;
+    function test_NamedItem_Count$LocalScope_cvt_JScript_V14(): void;
+    function test_NamedItem_GetItemOrNull_cvt_JScript_V14(): void;
+    function test_NamedItem_AddFormulaEqual_cvt_JScript_V14(): void;
+    function test_NamedItem_AddRange_cvt_JScript_V14(): void;
+    function test_NamedItem_AddFormulaNoEqual_cvt_JScript_V14(): void;
+    function test_NamedItem_AddNumber_cvt_JScript_V14(): void;
+    function test_NamedItem_AddBool_cvt_JScript_V14(): void;
+    function test_NamedItem_AddFormulaComplex_cvt_JScript_V14(): void;
+    function test_NamedItem_AddInvalidFormula_cvt_JScript_V14(): void;
+    function test_NamedItem_AlreadyExist_cvt_JScript_V14(): void;
+    function test_NamedItem_CommentEmpty_cvt_JScript_V14(): void;
+    function test_NamedItem_SetComment_cvt_JScript_V14(): void;
+    function test_NamedItem_WorksheetAddNew_cvt_JScript_V14(): void;
+    function test_NamedItem_WorksheetAddExisting_cvt_JScript_V14(): void;
+    function test_NamedItem_AddRecalc_cvt_JScript_V14(): void;
+    function test_NamedItem_DeleteRecalc_cvt_JScript_V14(): void;
+    function test_NamedItem_ArrayValuesRangeRef_bvt_JScript_V17(): void;
+    function test_NamedItem_ArrayValuesIntRef_bvt_JScript_V17(): void;
+    function test_NamedItem_ArrayValuesArrayRef_bvt_JScript_V17(): void;
+    function test_NamedItem_PutFormula_unstable_JScript_V17(): void;
+}
+declare module ExcelTest {
+    function test_PageLayout_SetAndGetPageOrientationValue$AsyncAwait_cvt_JScript_V17(): Promise<void>;
+    function test_PageLayout_SetAndGetPaperSize$AsyncAwait_cvt_JScript_V17(): Promise<void>;
+    function test_PageLayout_SetAndGetBlackAndWhite$AsyncAwait_cvt_JScript_V17(): Promise<void>;
+    function test_PageLayout_SetAndGetPrintErrors$AsyncAwait_cvt_JScript_V17(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_Protection_SetRangeLockTrue_cvt_JScript_V12(): void;
+    function test_Protection_SetRangeLockFalse_cvt_JScript_V12(): void;
+    function test_Protection_SetRangeLockForSubset_cvt_JScript_V12(): void;
+    function test_Protection_UnunifiedRangeLock_cvt_JScript_V12(): void;
+    function test_Protection_SetRangeFormulaHiddenTrue_cvt_JScript_V12(): void;
+    function test_Protection_SetRangeFormulaHiddenFalse_cvt_JScript_V12(): void;
+    function test_Protection_UnunifiedRangeFormulaHidden_cvt_JScript_V12(): void;
+    function test_Protection_ProtectSheetNoPassword_cvt_JScript_V12(): void;
+    function test_Protection_ProtectSheetWithPassword_cvt_JScript_V17(): void;
+    function test_Protection_SetProtectionOptionsTrueNoPassword_cvt_JScript_V12(): void;
+    function test_Protection_SetProtectionOptionsTrueNoPassword_cvt_JScript_V17(): void;
+    function test_Protection_SetProtectionOptionsFalseNoPassword_cvt_JScript_V12(): void;
+    function test_Protection_SetProtectionOptionsFalseNoPassword_cvt_JScript_V17(): void;
+    function test_Protection_ProtectWorkbookNoPassword_cvt_JScript_V17(): Promise<void>;
+    function test_Protection_ProtectWorkbookWithPassword_cvt_JScript_V17(): Promise<void>;
+    function test_Protection_UnprotectWorkbookWithWrongPassword_cvt_JScript_V17(): Promise<void>;
+    function test_Protection_ProtectProtectedWorkbook_cvt_JScript_V17(): Promise<void>;
+    function test_Protection_UnprotectUnprotectedWorkbook_cvt_JScript_V17(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_RangeFormat_BasicTest_bvt_JScript_V11(): void;
+    function test_RangeFormat_ClearFill_cvt_JScript_V11(): void;
+    function test_RangeFormat_NamedColor_cvt_JScript_V11(): void;
+    function test_RangeFormat_IrregularFill_cvt_JScript_V11(): void;
+    function test_RangeFormat_IrregularFont_cvt_JScript_V11(): void;
+    function test_RangeFormat_ColWidthSet_cvt_JScript_V12(): void;
+    function test_RangeFormat_ColWidthAutoFitSet_cvt_JScript_V12(): void;
+    function test_RangeFormat_RowHeightSet_cvt_JScript_V12(): void;
+    function test_RangeFormat_RowHeightAutoFitSet_cvt_JScript_V12(): void;
+    function test_RangeFormat_Borders_cvt_JScript_V11(): void;
+    function test_RangeFormat_DeleteSheetOnAccess_cvt_JScript_V11(): void;
+    function test_RangeFormat_DefaultFill_cvt_JScript_V11(): void;
+    function test_RangeFormat_WrapText_cvt_JScript_V14(): void;
+    function test_RangeFormat_BoldItalic_cvt_JScript_V14(): void;
+    function test_RangeFormat_SetAndGetTextOrientationWithPositiveValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetAndGetTextOrientationWithNegativeValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetAndGetTextOrientationWithVerticalOrientation_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetNonuniformTextOrientationValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetInvalidPositiveTextOrientationValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetInvalidNegativeTextOrientationValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetInvalidDataTypeTextOrientationValue_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetColumnWithStandardWidth_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetStandardWidth_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetUniformNonStandardWidth_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetNonUniformNonStandardWidth_cvt_JScript_V17(): void;
+    function test_RangeFormat_SetRowWithStandardHeight_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetStandardHeight_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetUniformNonStandardHeight_cvt_JScript_V17(): void;
+    function test_RangeFormat_GetNonUniformNonStandardHeight_cvt_JScript_V17(): void;
+}
+declare module ExcelTest {
+    function test_Range_BasicTest_bvt_JScript_V11(): void;
+    function test_Range_BasicTestAfter10SecondsDelay_cvt_JScript_V11(): void;
+    function test_Range_RunWithUrl_cvt_JScript_V11(): void;
+    function test_Range_SetValueWithNull_cvt_JScript_V13(): void;
+    function test_Range_SetValueWithNonArray_cvt_JScript_V13(): void;
+    function test_Range_SingleValue_bvt_JScript_V11(): void;
+    function test_Range_Formulas_bvt_JScript_V11(): void;
+    function test_Range_FormulasShouldFailOnSyntaxError_cvt_JScript_V11(): void;
+    function test_Range_FormulasSetA1GetR1C1_bvt_JScript_V12(): void;
+    function test_Range_FormulasSetR1C1GetR1C1_cvt_JScript_V12(): void;
+    function test_Range_FormulasSetR1C1GetA1_bvt_JScript_V12(): void;
+    function test_Range_OneFormulasR1C1GetR1C1Array_cvt_JScript_V12(): void;
+    function test_Range_OneFormulasR1C1GetA1Array_cvt_JScript_V12(): void;
+    function test_Range_ClearNull_bvt_JScript_V11(): void;
+    function test_Range_InvalidOperation_cvt_JScript_V11(): void;
+    function test_Range_InsertInterferesWithTable_cvt_JScript_V11(): void;
+    function test_Range_Insert_cvt_JScript_V11(): void;
+    function test_Range_Delete_cvt_JScript_V11(): void;
+    function test_Range_DeleteEncompassesTable_cvt_JScript_V14(): void;
+    function test_Range_DeleteFailPartialTable_cvt_JScript_V14(): void;
+    function test_Range_GetActiveRange_cvt_JScript_V11(): void;
+    function test_Range_GetActiveSheet_cvt_JScript_V11(): void;
+    function test_Range_SetAndGetActiveRange_cvt_JScript_V11(): void;
+    function test_Range_HideUnhideCols_cvt_JScript_V12(): void;
+    function test_Range_HideUnhideRows_cvt_JScript_V12(): void;
+    function test_Range_GetHideColsState_cvt_JScript_V12(): void;
+    function test_Range_SelectFailOnHidden_cvt_JScript_V11(): void;
+    function test_Range_SetAndGetActiveSheet_cvt_JScript_V11(): void;
+    function test_Range_ActivateHiddenSheetFail_cvt_JScript_V11(): void;
+    function test_Range_Binding_cvt_JScript_V11(): void;
+    function test_Range_KeepRefBindingCrossRequests_bvt_JScript_V11(): void;
+    function test_Range_KeepRefBindingCross2Requests_cvt_JScript_V11(): void;
+    function test_Range_BindingCleanup_cvt_JScript_V11(): void;
+    function test_Range_BindingNoCleanup_cvt_JScript_V11(): void;
+    function test_Range_GetReferenceCount_cvt_JScript_V11(): void;
+    function test_Range_RemoveAllReferences_cvt_JScript_V11(): void;
+    function test_Range_SheetMismatch_cvt_JScript_V11(): void;
+    function test_Range_EntireSheetDelBlocked_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormat_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatUniformColStr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatUniformColArr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatUniformPartColArr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatSizeMismatch_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatLocal_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatLocalUniformColStr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatLocalUniformColArr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatLocalUniformPartColArr_cvt_JScript_V11(): void;
+    function test_Range_SetNumberFormatLocalSizeMismatch_cvt_JScript_V11(): void;
+    function test_Range_GetRowColumnOffsetValid_cvt_JScript_V11(): void;
+    function test_Range_DeleteSheetOnAccess_cvt_JScript_V11(): void;
+    function test_Range_KeepRefDeleteSheetOnAccess_cvt_JScript_V11(): void;
+    function test_Range_KeepRefDeleteSheetOnAccessThenDelRef_cvt_JScript_V11(): void;
+    function test_Range_KeepRefDeleteSheetThenDelRef_cvt_JScript_V11(): void;
+    function test_Range_KeepRefDeleteSheetDontDelRef_cvt_JScript_V11(): void;
+    function test_Range_KeepRefDeleteBackingRange_cvt_JScript_V11(): Promise<void>;
+    function test_Range_IntersectionValidUsingRangeObject_cvt_JScript_V11(): void;
+    function test_Range_IntersectionOrNullValidUsingRangeObject_cvt_JScript_V11(): void;
+    function test_Range_IntersectionValidUsingAddress_cvt_JScript_V11(): void;
+    function test_Range_IntersectionOrNullValidUsingAddress_cvt_JScript_V11(): void;
+    function test_Range_IntersectionAcrossWorksheetsShouldFailUsingRangeObject_cvt_JScript_V11(): void;
+    function test_Range_IntersectionAcrossWorksheetsShouldFailUsingAddress_cvt_JScript_V11(): void;
+    function test_Range_IntersectionShouldFailIfNoIntersectionIsPossible_cvt_JScript_V11(): void;
+    function test_Range_IntersectionFailsOnNull_cvt_JScript_V11(): void;
+    function test_Range_IntersectionFailsOnWrongArgTypePassedIn_cvt_JScript_V11(): void;
+    function test_Range_IntersectionOrNullWhenNoIntersectionPossible$Load_cvt_JScript_V11(): void;
+    function test_Range_IntersectionOrNullWhenNoIntersectionPossible$Chain_cvt_JScript_V11(): void;
+    function test_Range_IntersectionOrNullWhenNoIntersectionPossible$IsNull_cvt_JScript_V11(): void;
+    function test_Range_GetBoundingRectUsingRangeObject_cvt_JScript_V11(): void;
+    function test_Range_GetBoundingRectUnboundedUsingRangeObject_cvt_JScript_V11(): void;
+    function test_Range_GetInvalidCellCountOfEntireWorksheet_cvt_JScript_V14(): void;
+    function test_Range_GetValidCellCountOfSmallerRange_cvt_JScript_V11(): void;
+    function test_Range_MergeUnmerge_cvt_JScript_V12(): void;
+    function test_Range_MergeUnmergeAcross_cvt_JScript_V12(): void;
+    function test_Range_ValueTypes_cvt_JScript_V11(): void;
+    function test_Range_LargeData_cvt_JScript_V11(): void;
+    function test_Range_CreateFromMultiRangeFails_cvt_JScript_V11(): void;
+    function usedRangeSetupHelper(ctx: Excel.RequestContext): Excel.Worksheet;
+    function test_Range_GetUsedRange$$ValuesOnly$Null_cvt_JScript_V11(): void;
+    function test_Range_GetUsedRange$$ValuesOnly$False_cvt_JScript_V12(): void;
+    function test_Range_GetUsedRange$SingleColumn$$BothRegularAndNullObject_cvt_JScript_V12(): void;
+    function test_Range_GetUsedRange$$BothRegularAndNullObject$$ValuesOnly$True_cvt_JScript_V12(): void;
+    function test_Range_GetUsedRange$$NoUsedRange$ValuesOnly_cvt_JScript_V12(): void;
+    function test_Range_GetUsedRangeOrNullObj$$NoUsedRange$ValuesOnly_cvt_JScript_V12(): void;
+    function test_Range_GetWorksheet_cvt_JScript_V12(): void;
+    function test_Range_getRowsAbove$normalCase_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$negativeNumbers_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$negativeNumbersLargerThanRangeItself_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$noArgumentMeansOneRow_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$MinusOne_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$goingOutOfRange_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$zeroFail_cvt_JScript_V11(): void;
+    function test_Range_getRowsAbove$nonNumeric_cvt_JScript_V11(): void;
+    function test_Range_getRowsBelow_cvt_JScript_V11(): void;
+    function test_Range_getRowsBelow$negative_cvt_JScript_V11(): void;
+    function test_Range_getRowsBelow$One_cvt_JScript_V11(): void;
+    function test_Range_getRowsBelow$MinusOne_cvt_JScript_V11(): void;
+    function test_Range_getRowsBelow$zeroFail_cvt_JScript_V11(): void;
+    function test_Range_getColumnsBefore_cvt_JScript_V11(): void;
+    function test_Range_getColumnsBefore$negative_cvt_JScript_V11(): void;
+    function test_Range_getColumnsBefore$One_cvt_JScript_V11(): void;
+    function test_Range_getColumnsBefore$MinusOne_cvt_JScript_V11(): void;
+    function test_Range_getColumnsBefore$zeroFail_cvt_JScript_V11(): void;
+    function test_Range_getColumnsAfter_cvt_JScript_V11(): void;
+    function test_Range_getColumnsAfter$negative_cvt_JScript_V11(): void;
+    function test_Range_getColumnsAfter$One_cvt_JScript_V11(): void;
+    function test_Range_getColumnsAfter$MinusOne_cvt_JScript_V11(): void;
+    function test_Range_getColumnsAfter$zeroFail_cvt_JScript_V11(): void;
+    function test_Range_getResizedRange_cvt_JScript_V11(): void;
+    function test_Range_getResizedRange$negative_cvt_JScript_V11(): void;
+    function test_Range_getResizedRange$negativeBeyondBounds_cvt_JScript_V11(): void;
+    function test_Range_getAbsoluteResizedRange_cvt_JScript_V17(): void;
+    function test_Range_getAbsoluteResizedRange$zeroSize_cvt_JScript_V17(): void;
+    function test_Range_getAbsoluteResizedRange$negativeSize_cvt_JScript_V17(): void;
+    function test_Range_getAbsoluteResizedRange$outOfRange_cvt_JScript_V17(): void;
+    function test_Range_Calculate_cvt_JScript_V16(): void;
+    function test_Range_GetIsEntireRow_cvt_JScript_V17(): void;
+    function test_Range_GetIsEntireColumn_cvt_JScript_V17(): void;
+    function test_Range_BasicHyperlinkTest_cvt_JScript_V17(): void;
+    function test_Range_SetHyperlinkNoTextToDisplayOrScreenTip_cvt_JScript_V17(): void;
+    function test_Range_SetDocRefNoTextToDisplayOrScreenTip_cvt_JScript_V17(): void;
+    function test_Range_HyperlinkInvalidArgsTest_cvt_JScript_V17(): void;
+    function test_Range_BasicDocumentReferenceTest_cvt_JScript_V17(): void;
+    function test_Range_ClearHyperlinkTest_cvt_JScript_V17(): void;
+    function test_Range_RemoveHyperlink_cvt_JScript_V17(): Promise<void>;
+    function surroundingRegionSetupHelper(ctx: Excel.RequestContext): Excel.Worksheet;
+    function test_Range_GetSurroundingRegionWithExpansion_cvt_JScript_V17(): void;
+    function test_Range_GetSurroundingRegionWithoutExpansion_cvt_Jscript_V17(): void;
+    function test_Range_GetImage_cvt_JScript_V18(): void;
+    function test_Range_GetSurroundingRegionWithNoData_cvt_Jscript_V17(): void;
+    function test_Range_ShowCard_cvt_JScript_V18(): OfficeExtension.IPromise<void>;
+    function test_Range_Areas_cvt_JScript_V18(): Promise<void>;
+    function test_Range_Clear_bvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_RangeView_HiddenRowsValuesGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsValuesPut_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsNumfmtPut_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsNumfmtPut_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsValuesGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFirstTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsLastTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsAllHiddenTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsLastTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsFirstTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsAllHiddenTextGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaPut_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsFormulaGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaR1C1Get_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaR1C1Put_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsFormulaR1C1Get_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaLocalGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsFormulaLocalPut_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsFormulaLocalGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsNumberFormatGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsNumFmtGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsValueTypesGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsValueTypesGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenRowsCellAddrGet_cvt_JScript_V13(): void;
+    function test_RangeView_HiddenColumnsCellAddrGet_cvt_JScript_V13(): void;
+    function test_RangeView_GetRange_cvt_JScript_V13(): void;
+    function test_RangeView_RowsValuesGet_cvt_JScript_V13(): void;
+    function test_RangeView_RowsValuesSet_cvt_JScript_V13(): void;
+    function test_RangeView_RowsGetItemGetParentRange_cvt_JScript_V13(): void;
+    function test_RangeView_RowsGetItemBounds_cvt_JScript_V13(): void;
+    function test_RangeView_Clear_bvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_ROAgave_Read_bvt_JScript_V11(): void;
+    function test_ROAgave_ReadCrossRequest_bvt_JScript_V11(): void;
+    function test_ROAgave_WriteBasicTest_bvt_JScript_V11(): void;
+    function test_ROAgave_WriteHackRequestFlag_bvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_ROSheet_BasicTest_bvt_JScript_V11(): void;
+}
+declare module ExcelTest {
+    function test_RichApiEvent_Worksheet$SheetActivated_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$SheetDeactivated_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_WorksheetCollection$AddRemoveAddedEvent_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$AddRemoveDataChanged_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByCleaningText_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedBySettingText_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByInsertingCells_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByDeletingCells_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByInsertingColumn_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByDeletingColumn_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByInsertingRow_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$DataChangedByDeletingRow_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$AddRemoveSelectionChanged_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Worksheet$SelectionChangedViaSwitchingSheets_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_WorksheetCollection$AddRemoveActivate_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_WorksheetCollection$AddRemoveDeactivate_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Table$AddRemoveSelectionChanged_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Table$AddRemoveSelectionChangedIntersectedRange_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Table$AddRemoveSelectionChangedActiveCellNotInTable_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_Table$AddRemoveSelectionChangedJumpOutFromTable_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_TableCollection$AddRemoveDataChangedNotInTable_cvt_JScript_V17(): Promise<void>;
+    function test_RichApiEvent_WorksheetCollection$AddRemoveDeletedEvent_cvt_JScript_V18(): Promise<void>;
+    function test_RichApiEvent_Table$AddRemoveSelectionChangedAcrossWorksheet_cvt_JScript_V17(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_Setting_ReadStoredSetting_cvt_JScript_V14(): void;
+    function test_Setting_GetCount_cvt_JScript_V14(): void;
+    function test_Setting_WriteAndReadSetting_cvt_JScript_V14(): void;
+    function test_Setting_WriteTwiceAndReadSetting_cvt_JScript_V14(): void;
+    function test_Setting_WriteAndDeleteSetting_cvt_JScript_V14(): void;
+    function test_Setting_ReadMissingKey_cvt_JScript_V14(): void;
+    function test_Setting_ReadSNullkey_cvt_JScript_V14(): void;
+    function test_Setting_ReadAllSettings_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichString_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichBool_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichNumber_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichArray_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichDateArray_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichObject_cvt_JScript_V14(): void;
+    function test_Setting_SetV1ReadRichDate_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1String_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1Bool_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1Number_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1Array_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1DateArray_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1Object_cvt_JScript_V14(): void;
+    function test_Setting_SetRichGetV1Date_cvt_JScript_V14(): void;
+}
+declare module ExcelTest {
+    function test_HiddenSheet_AddSheetUseThenDelete_cvt_JScript_V11(): void;
+    function test_HiddenSheet_GetSheet_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveSheetGeneral_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightLast_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRight1_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightEnd_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightCross1_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightCross2_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftBegin_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftCross_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftEnd_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftLast_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightStart_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveRightRight_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftStart_cvt_JScript_V11(): void;
+    function test_HiddenSheet_MoveLeftEnd2_cvt_JScript_V11(): void;
+    function test_HiddenSheet_CheckHidden_cvt_JScript_V11(): void;
+    function test_HiddenSheet_CheckVeryHidden_cvt_JScript_V11(): void;
+    function test_HiddenSheet_AddSheetThenHide_cvt_JScript_V12(): void;
+    function test_HiddenSheet_AddSheetThenVeryHide_cvt_JScript_V12(): void;
+}
+declare module ExcelTest {
+    function test_Worksheet_AddSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_AddAndThenActivate_cvt_JScript_V17(): void;
+    function test_Worksheet_AddTwoAndThenActivate_cvt_JScript_V17(): void;
+    function test_Worksheet_AddSheetNameWithSpace_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetWithLongName_cvt_JScript_V11(): void;
+    function test_Worksheet_AddDuplicateWorksheetName_cvt_JScript_V11(): void;
+    function test_Worksheet_AddDuplicateWorksheetName2_cvt_JScript_V11(): void;
+    function test_Worksheet_CanDeleteLastWorksheet_cvt_JScript_V11(): void;
+    function test_Worksheet_Copy$NotSpecified_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_Copy$AtBeginning_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_Copy$BeforeSheet_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_Copy$AfterSheet_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_Copy$AtEnd_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_AddSheetKeepActiveSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_AddDeleteSheetKeepActiveSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetGetPosition_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetSetPosition_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetEmptyName_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetNullName_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetAddTable_cvt_JScript_V11(): void;
+    function test_Worksheet_RenameDefaultSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_RenameSheetEmpty_cvt_JScript_V11(): void;
+    function test_Worksheet_RenameSheetNull_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetUseThenDelete_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetLoadThatSheetThenDeleteSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_AddSheetLoadSheetsThenDeleteSheet_cvt_JScript_V11(): void;
+    function test_Worksheet_LoadAllSheets_bvt_JScript_V11(): void;
+    function test_Worksheet_LoadNonWorksheetFails_cvt_JScript_V11(): void;
+    function test_Worksheet_DeleteOnAccess_cvt_JScript_V11(): void;
+    function test_Worksheet_ClearUsedRange_cvt_JScript_V11(): void;
+    function test_Worksheet_GetItemOrNull_cvt_JScript_V14(): void;
+    function test_Worksheet_GetFirstGetLast_cvt_JScript_V15(): void;
+    function test_Worksheet_GetLastWithAdding_cvt_JScript_V15(): void;
+    function test_Worksheet_GetNextGetPreviousAtEnd_cvt_JScript_V15(): void;
+    function test_Worksheet_GetNextGetPreviousAtBeginning_cvt_JScript_V15(): void;
+    function test_Worksheet_GetNextGetPreviousOffTheEdge_cvt_JScript_V15(): void;
+    function test_Worksheet_GetNextGetLastThenPrevious_cvt_JScript_V17(): void;
+    function test_Worksheet_Calculate_cvt_JScript_V16(): void;
+    function test_Worksheet_GetSetTabColorWithNamedColor_cvt_JScript_V17(): void;
+    function test_Worksheet_GetSetTabColorWithHexColor_cvt_JScript_V17(): void;
+    function test_Worksheet_GetSetTabColorToNullInvisibleSheet_cvt_JScript_V17(): void;
+    function test_Worksheet_SetTabColorToNullNoOp_cvt_JScript_V17(): void;
+    function test_Worksheet_GetSetTabColorToAutoColor_cvt_JScript_V17(): void;
+    function test_Worksheet_GetSetGridlines_cvt_JScript_V17(): void;
+    function test_Worksheet_GetSetHeadings_cvt_JScript_V17(): void;
+    function test_Worksheet_getRangeByIndexes_cvt_JScript_V17(): void;
+    function test_Worksheet_getRangeByIndexes$outOfRange_cvt_JScript_V17(): void;
+    function test_Worksheet_getRangeByIndexes$zeroSize_cvt_JScript_V17(): void;
+    function test_Worksheet_getRangeByIndexes$negativeSize_cvt_JScript_V17(): void;
+    function test_Worksheet_FreezePanes$FreezeAt_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$GetLocation$NoFreeze_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeRows_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeRows$InvalidArg_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeColumns_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeColumns$InvalidArg_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeRowsAndColumns_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_FreezePanes$FreezeAnotherSheet_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_GetStandardWidth_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_SetStandardWidth_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_SetStandardWidthWithInvalidNegativeValue_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_SetStandardWidthWithInvalidPositiveValue_cvt_JScript_V17(): Promise<void>;
+    function test_Worksheet_GetStandardHeight_cvt_JScript_V17(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_SSO_GetAccessToken_cvt_JScript_V17(): Promise<void>;
+    function test_SSO_GetGraphFileData_cvt_JScript_V17(): Promise<{}>;
+}
+declare module ExcelTest {
+    module SortUtil {
+        var sheetName: string;
+        var tableName: string;
+        var singleColumnDataset: number[][];
+        var singleColumnLetterDataset: string[][];
+        var singleRowDataset: number[][];
+        var twoColumnDataset: number[][];
+        var tableDataset: (string | number)[][];
+    }
+    function test_SortFilter_SortRangeBasic_bvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeAscending_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeHasHeader_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeAscendingHasHeader_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeMatchCase_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeColumn_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeMultiple_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeCellColor_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeFontColor_cvt_JScript_V12(): void;
+    function test_SortFilter_SortRangeIcon_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableEmptyCondition_cvt_JScript_V12(): Promise<void>;
+    function test_SortFilter_SortTableBasic_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableAscending_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableMatchCase_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableMultipleSortLevel_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableFontColor_cvt_JScript_V12(): void;
+    function test_SortFilter_SortTableCellColor_cvt_JScript_V12(): void;
+}
+declare module ExcelTest {
+    function test_Style_CreateStyle_cvt_JScript_V17(): void;
+    function test_Style_ApplyStyle_cvt_JScript_V17(): void;
+    function test_Style_ApplyBuiltInStyle_cvt_JScript_V17(): void;
+    function test_Style_DeleteStyle_cvt_JScript_V17(): void;
+    function test_Style_GetStyleIncludeProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleAlignmentProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleBorderProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleFontProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleNumberProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStylePatternsProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleProtectionProperties_cvt_JScript_V17(): void;
+    function test_Style_GetStyleOtherProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleIncludeProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleAlignmentProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleBorderProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleFontProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleNumberProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStylePatternsProperties_cvt_JScript_V17(): void;
+    function test_Style_PutStyleProtectionProperties_cvt_JScript_V17(): void;
+}
+declare module ExcelTest {
+    function test_SortFilter_FilterCustom_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterCustomEmpty_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterCustomNoText_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterTop_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterTopPercent_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterBottomItems_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterBottomPercent_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterCellColor_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterFontColor_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterDynamic_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterDynamicDate_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterValuesStringOnly_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterDatesOnly_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterIcon_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterNone_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterClear_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperTopItems_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperTopPercent_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperBottomItems_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperBottomPercent_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperCellColor_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperCustom_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperDynamic_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperFontColor_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperIcon_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterHelperValuesStringOnly_cvt_JScript_V12(): void;
+    function test_SortFilter_FilterCorrectlyUpdatesLinkedChart_cvt_JScript_V12(): void;
+}
+declare module ExcelTest {
+    function test_Table_LoadTableAndRangeAddress_bvt_JScript_V11(): void;
+    function test_Table_LoadNonexistingTableString_cvt_JScript_V11(): void;
+    function test_Table_LoadNonexistingTableInt_cvt_JScript_V11(): void;
+    function test_Table_CreateTableInvalidSheetname_cvt_JScript_V11(): void;
+    function test_Table_CreateTableInvalidAddress_cvt_JScript_V11(): void;
+    function test_Table_CreateValidTable$Address_cvt_JScript_V11(): void;
+    function test_Table_CreateValidTable$AddressWSheetOnDifferentActive_cvt_JScript_V11(): void;
+    function test_Table_CreateValidTable$AddressWithoutSheet_cvt_JScript_V11(): void;
+    function test_Table_CreateValidTable$RangeObject_cvt_JScript_V11(): void;
+    function test_Table_CreateValidTable$ExpiredRangeObject_cvt_JScript_V11(): void;
+    function test_Table_Retrieval_cvt_JScript_V11(): void;
+    function test_Table_RetrievalAndDeletion_cvt_JScript_V11(): void;
+    function test_Table_LoadAllAfterDeletion_cvt_JScript_V11(): void;
+    function test_Table_RenameInvalidEmpty_cvt_JScript_V11(): void;
+    function test_Table_RenameInvalidExisting_cvt_JScript_V11(): void;
+    function test_Table_PropertiesValidGetterSetter_cvt_JScript_V11(): void;
+    function test_Table_PropertiesRetrievedGetterSetter_cvt_JScript_V11(): void;
+    function test_Table_AddRowLast_cvt_JScript_V11(): void;
+    function test_Table_AddRowToEnd2D_cvt_JScript_V14(): void;
+    function test_Table_AddRowToEnd2DWithTotalRow_cvt_JScript_V14(): void;
+    function test_Table_AddRowToMiddle2D_cvt_JScript_V14(): void;
+    function test_Table_AddRowToMiddle2DWithTotalRow_cvt_JScript_V14(): void;
+    function test_Table_AddRowNullForBothParameters_cvt_JScript_V11(): void;
+    function test_Table_AddRowLastToEmptyTable_cvt_JScript_V11(): void;
+    function test_Table_AddRow_cvt_JScript_V11(): void;
+    function test_Table_AddRowInvalidIndexTooBig_cvt_JScript_V11(): void;
+    function test_Table_AddRowNegativeIndexAppendAtEnd_cvt_JScript_V11(): void;
+    function test_Table_AddRowTooSmall_cvt_JScript_V11(): void;
+    function test_Table_AddRowTooBig_cvt_JScript_V11(): void;
+    function test_Table_AddRowFraction_cvt_JScript_V11(): void;
+    function test_Table_InsertRowCheckAutoExpansion_cvt_JScript_V11(): void;
+    function test_Table_AppendRowCheckAutoExpansion_cvt_JScript_V11(): void;
+    function test_Table_AppendRowTableLevelFormula_cvt_JScript_V11(): Promise<void>;
+    function test_Table_RemoveRow_cvt_JScript_V11(): void;
+    function test_Table_GetRow_cvt_JScript_V11(): void;
+    function test_Table_GetRowTooBig_cvt_JScript_V11(): void;
+    function test_Table_GetRowNegative_cvt_JScript_V11(): void;
+    function test_Table_GetRowDecimal_cvt_JScript_V11(): void;
+    function test_Table_InsertRowOverOffsetTable_cvt_JScript_V11(): void;
+    function test_Table_AppendRowOverOffsetTable_cvt_JScript_V11(): void;
+    function test_Table_AddColumn_cvt_JScript_V11(): void;
+    function test_Table_AddColumnWithName_cvt_JScript_V14(): void;
+    function test_Table_AddColumnShouldFailOnTooLongName_cvt_JScript_V14(): void;
+    function test_Table_AddColumnShouldFailOnDuplicateName_cvt_JScript_V14(): void;
+    function test_Table_AddColumnToEnd_cvt_JScript_V14(): void;
+    function test_Table_AddColumnToEndOtherTableBlocked_cvt_JScript_V14(): void;
+    function test_Table_AddEmptyColumn_cvt_JScript_V11(): void;
+    function test_Table_AddTableDeleteColumn_cvt_JScript_V11(): void;
+    function test_Table_AddTableDeleteLastColumn_cvt_JScript_V11(): void;
+    function test_Table_AddTableDeleteRange_cvt_JScript_V11(): void;
+    function test_Table_AddEmptyTooSmall_cvt_JScript_V11(): void;
+    function test_Table_AddEmptyTooBig_cvt_JScript_V11(): void;
+    function test_Table_SetColData_cvt_JScript_V11(): void;
+    function test_Table_GetCol_cvt_JScript_V11(): void;
+    function test_Table_GetColNegativeIndex_cvt_JScript_V11(): void;
+    function test_Table_GetColTooBigIndex_cvt_JScript_V11(): void;
+    function test_Table_GetColDecimalIndex_cvt_JScript_V11(): void;
+    function test_Table_SetColumnName_cvt_JScript_V14(): void;
+    function test_Table_DataRangeRowsValues_cvt_JScript_V11(): void;
+    function test_Table_DataRangeUpdateValues_cvt_JScript_V11(): void;
+    function test_Table_Ranges_cvt_JScript_V11(): void;
+    function test_Table_SelectionStays_cvt_JScript_V11(): void;
+    function test_Table_ConvertToRange_cvt_JScript_V12(): void;
+    function test_Table_GetWorksheet_cvt_JScript_V12(): void;
+    function test_Table_ClearRangeWithTableWithFilter_cvt_JScript_V12(): void;
+    function test_Table_DeleteEntireRangeOfATableWithFilter_cvt_JScript_V12(): void;
+    function test_Table_GetItemOrNull_cvt_JScript_V14(): void;
+    function test_Table_ColumnGetItemOrNull_cvt_JScript_V14(): void;
+    function test_Table_TableOptions_cvt_JScript_V13(): void;
+    function test_Table_Count_cvt_JScript_V14(): void;
+    function test_Table_ColumnCount_cvt_JScript_V14(): void;
+    function test_Table_RowCount_cvt_JScript_V14(): void;
+}
+declare module ExcelTest {
+    function test_Visual_AddWithFullAddressScenario_cvt_JScript_V19(): void;
+}
+declare module ExcelTest {
+    function test_Events_Workbook$AddRemoveSelectionChanged_cvt_JScript_V11(): void;
+    function test_Events_Settings$AddRemoveSettingsChanged_cvt_JScript_V13(): void;
+}
+declare module ExcelTest {
+    function test_Workbook_GetApplicationCalculationMode_cvt_JScript_V11(): void;
+    function test_Workbook_SuspendApiCalculationUntilNextSync_cvt_JScript_V17(): void;
+    function test_Workbook_ApplicationViaContextDirectly$GetCalcMode_cvt_JScript_V11(): void;
+    function test_Workbook_GetSelectedRange_cvt_JScript_V11(): void;
+    function test_Workbook_GetActiveCell_cvt_JScript_V17(): OfficeExtension.IPromise<void>;
+    function test_Workbook_GetWorkbookName_cvt_JScript_V17(): void;
+    function test_Workbook_DataConnectionsRefreshAll_cvt_JScript_V17(): Promise<void>;
+    function test_Workbook_GetReadOnly_cvt_JScript_V18(): Promise<void>;
+    function test_Workbook_GetSaved_cvt_JScript_V18(): Promise<void>;
+    function test_Workbook_PutSavedFalse_cvt_JScript_V18(): Promise<void>;
+    function test_Workbook_PutSavedTrue_cvt_JScript_V18(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_Binding_GetShouldFail_cvt_REST_V11(): OfficeExtension.IPromise<void>;
+}
+declare module ExcelTest {
+}
+declare module ExcelTest {
+    function test_Chart_AddWithTitleAndLegendSettings_cvt_REST_V11(): void;
+    function test_Chart_AddAndCheckNullablePropertiesOfTitleAndLegend_cvt_REST_V11(): void;
+    function test_Chart_AddAndCheckNullablePropertiesOfDataLabels_cvt_REST_V11(): void;
+}
+declare module ExcelTest {
+    function test_Chart_ChartsCollectionPost_bvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionAddMethodInvoke_bvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionAddFailsWithInvalidArgument_bvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionAddFailsWhenNonExistantChart_bvt_REST_V11(): void;
+    function test_Chart_AddWithGlobalNamedRange_cvt_REST_V11(): void;
+    function test_Chart_AddWithDataFromAnotherSheet_cvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionItemAtSuccess_cvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionGetByName_cvt_REST_V12(): void;
+    function test_Chart_ChartsCollectionItemAtFailIfInvalidArgument_cvt_REST_V11(): void;
+    function test_Chart_ChartsCollectionItemAtFailIfOutOfBounds_cvt_REST_V11(): void;
+    function test_Chart_ChartCollectionDeleteSuccess_cvt_REST_V11(): void;
+    function test_Chart_CheckDefaultSizeOnAddingChart_cvt_REST_V11(): void;
+    function test_Chart_ResizeAndMove_cvt_REST_V11(): void;
+    function test_Chart_ChartTop_cvt_REST_V11(): void;
+    function test_Chart_ChartAxes_cvt_REST_V11(): void;
+    function test_Chart_ChartSeriesCollectionCount_cvt_REST_V11(): void;
+    function test_Chart_ChartUpdatesOnSourceDataChange_cvt_REST_V11(): void;
+    function test_Chart_AsImage_cvt_REST_V12(): void;
+    function test_Chart_AsImageHeight_cvt_REST_V12(): void;
+    function test_Chart_AsImageWidth_cvt_REST_V12(): void;
+    function test_Chart_AsImageBoth_cvt_REST_V12(): void;
+    function test_Chart_AsImageBothFill_cvt_REST_V12(): void;
+    function test_Chart_AsImageBothFitAndCenter_cvt_REST_V12(): void;
+    function test_Chart_AsImageFitModeAndDefault_cvt_REST_V12(): void;
+    function test_Chart_AsImageNegative_cvt_REST_V12(): void;
+    function test_Chart_Worksheet_cvt_REST_V12(): void;
+    function test_Chart_Count_cvt_REST_V14(): void;
+}
+declare module ExcelTest {
+    function test_Chart_AddWithNoTitle_cvt_REST_V11(): void;
+    function test_Chart_TitleRemovalFollowedBySettingTextOnIt_cvt_REST_V11(): void;
+    function test_Chart_TitleRemovalFollowedBySettingOverlay_cvt_REST_V11(): void;
+    function test_Chart_SetTitleTextNull_cvt_REST_V11(): void;
+    function test_Chart_LegendOnAndOffAndOverlay_cvt_REST_V11(): void;
+    function test_Chart_LegendProperty_cvt_REST_V18(): void;
+    function test_Chart_LegendEntryProperty_cvt_REST_V18(): void;
+    function test_Chart_DataLabelsShowValuesAndLegendKeysScenario_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsShowPercentagesAndCategoryNamesWithCustomSeparatorScenario_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsBubbleSizeAndSettingSeparatorFirstScenario_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsEnsureSettingSeparatorButNothingElseDoesntAddAnyTextsScenario_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsCallouts_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsSettingPropertyToFalseWhenNoDataLabelsExist_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsSettingInvalidPositionForChartType_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsSettingInvalidElementType1_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsSettingInvalidElementType2_cvt_REST_V11(): void;
+    function test_Chart_DataLabelsSettingInvalidElementType3_cvt_REST_V11(): void;
+    function test_Chart_AxisMinMaxUnitPropertiesScenario_cvt_REST_V11(): void;
+    function test_Chart_SetAndGetAxisDisplayUnitScenario1_cvt_REST_V18(): void;
+    function test_Chart_SetAndGetAxisDisplayUnitScenario2_cvt_REST_V18(): void;
+    function test_Chart_SetAndGetAxisPropertyScenario_cvt_REST_V18(): void;
+    function test_Chart_SetAndGetAxisCrossesScenario_cvt_REST_V18(): void;
+    function test_Chart_AxisSetMinToDataTrimmingValuesScenario_cvt_REST_V11(): void;
+    function test_Chart_AxisMinMaxUnitPropertyReset_cvt_REST_V11(): void;
+    function test_Chart_SetAndGetAxisTickProperties_cvt_REST_V18(): void;
+    function test_Chart_AxisValueAdjustment_cvt_REST_V11(): void;
+    function test_Chart_AxisGridlinesAndTitlesScenario_cvt_REST_V11(): void;
+    function test_Chart_AxisTitleRetrievalWhenNoAxisTitleExists1_cvt_REST_V11(): void;
+    function test_Chart_AxisTitleRetrievalWhenNoAxisTitleExists2_cvt_REST_V11(): void;
+    function test_Chart_AxisValueSettingThrowsOnNull_cvt_REST_V11(): void;
+    function test_Chart_InvalidAxisSet1_cvt_REST_V11(): void;
+    function test_Chart_InvalidAxisSet2_cvt_REST_V11(): void;
+    function test_Chart_InvalidAxisSet3_cvt_REST_V11(): void;
+    function test_Chart_InvalidAxisGet1_cvt_REST_V11(): void;
+    function test_Chart_InvalidAxisGet2_cvt_REST_V11(): void;
+    function test_Chart_ObjectPeristenceSeries_cvt_REST_V11(): void;
+    function test_Chart_ObjectPeristencePointsSet_cvt_REST_V11(): void;
+    function test_Chart_ObjectPeristencePointsLoad_cvt_REST_V11(): void;
+    function test_Chart_DataPointValues1_cvt_REST_V11(): void;
+    function test_Chart_GetOutOfBoundsSeries1_cvt_REST_V11(): void;
+    function test_Chart_GetOutOfBoundsSeries2_cvt_REST_V11(): void;
+    function test_Chart_GetOutOfBoundsPoints1_cvt_REST_V11(): void;
+    function test_Chart_GetOutOfBoundsPoints2_cvt_REST_V11(): void;
+    function test_Chart_TitleEmpty_cvt_REST_V11(): void;
+    function test_Chart_TitleLocale_cvt_REST_V11(): void;
+    function test_Chart_TitleLocaleRightToLeft_cvt_REST_V11(): void;
+    function test_Chart_TitleHorizontalAlignment_cvt_REST_V18(): void;
+    function test_Chart_TitleTopLeftWidthHeight_cvt_REST_V18(): void;
+    function test_Chart_TitleHiddenFont_cvt_REST_V11(): void;
+    function test_Chart_NameGetterDup_cvt_REST_V11(): void;
+    function test_Chart_NameGetterNoChart_cvt_REST_V11(): void;
+    function test_Chart_DeleteDupName_cvt_REST_V11(): void;
+    function test_Chart_List_cvt_REST_V11(): void;
+    function test_Chart_SeriesUpdate_cvt_REST_V11(): void;
+    function test_Chart_NameLocale_cvt_REST_V11(): void;
+    function test_Chart_NameLocaleRightToLeft_cvt_REST_V11(): void;
+    function test_Chart_DeleteAdd_cvt_REST_V11(): void;
+    function test_Chart_DatasourceUpdatedToNull_cvt_REST_V11(): void;
+    function test_Chart_DatasourceUpdatedToStringValid_cvt_REST_V11(): void;
+    function test_Chart_DatasourceNull_cvt_REST_V11(): void;
+    function test_Chart_DatasourceRangeCleared_cvt_REST_V11(): void;
+    function test_Chart_DatasourceUnbounded_cvt_REST_V11(): void;
+    function test_Chart_SeriesCount_cvt_REST_V14(): void;
+    function test_Chart_PointsCount_cvt_REST_V14(): void;
+    function test_Chart_TrendlineSetAndGetForwardAndBackward_cvt_REST_V18(): void;
+    function test_Chart_TrendlineSetAndGetForwardAndBackwardOnMovingAverage_cvt_REST_V18(): void;
+    function test_Chart_DeleteTrendline_cvt_REST_V18(): void;
+    function test_Chart_TrendlineSetAndGetDisplayEquationAndDisplayRSquared_cvt_REST_V18(): void;
+    function test_Chart_TrendlineSetAndGetDisplayEquationAndDisplayRSquaredOnMovingAverage_cvt_REST_V18(): void;
+    function test_Chart_AddSeries_cvt_REST_V18(): void;
+    function test_Chart_DeleteSeries_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetChartType_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetFiltered_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetHasDataLabels_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetMarkerSize_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetMarkerStyle_cvt_REST_V18(): void;
+    function test_Chart_TrendlineSetAndGetNameAndIntercept_cvt_REST_V18(): void;
+    function test_Chart_TrendlineSetInterceptOnWrongTypeTrendline_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetShowShadow_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetMarkerBackgroundColor_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetMarkerForegroundColor_cvt_REST_V18(): void;
+    function test_Chart_SeriesSetMarkerForegroundColorForInvalidType_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetPlotOrder_cvt_REST_V18(): void;
+    function test_Chart_SeriesGetAndSetSmooth_cvt_REST_V18(): void;
+    function test_Chart_SeriesSetSmoothForInvalidType_cvt_REST_V18(): void;
+}
+declare module ExcelTest {
+    function test_Chart_Chart_cvt_REST_V11(): void;
+    function test_Chart_ChartFill_cvt_REST_V11(): void;
+    function test_Chart_ChartFont_cvt_REST_V11(): void;
+    function test_Chart_ChartSeriesFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartSeriesFormatFill_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisFormatFont_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisFormatLine_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisTitleFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisTitleFormatFont_cvt_REST_V11(): void;
+    function test_Chart_ChartDatalabelsFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartDatalabelsFormatFont_cvt_REST_V11(): void;
+    function test_Chart_ChartDatalabelsFormatFill_cvt_REST_V11(): void;
+    function test_Chart_ChartAxisGridLineFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFont_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFill_cvt_REST_V11(): void;
+    function test_Chart_ChartTitleFormat_cvt_REST_V11(): void;
+    function test_Chart_ChartTitleFormatFont_cvt_REST_V11(): void;
+    function test_Chart_ChartTitleFormatFill_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFontBold_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFontColor_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFontItalic_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFontName_cvt_REST_V11(): void;
+    function test_Chart_ChartLegendFormatFontSize_cvt_REST_V11(): void;
+    function test_Chart_ChartTitleFormatFillClear_cvt_REST_V11(): void;
+    function test_Chart_ChartTitleFormatFillSetSolidColor_cvt_REST_V11(): void;
+    function test_Chart_ChartLineFormat_cvt_REST_V11(): void;
+}
+declare module ExcelTest {
+    function test_ConditionalFormats_GetCount_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetRange_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetPriority_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetPriority_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetPriorityGreaterThanMax_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetStopIfTrue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetStopIfTrueFail_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetType_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarShowValue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarShowValue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarBarDirection_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarBarDirection_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarBorderColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarBorderColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarAxisFormat_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarAxisFormat_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarPositiveFormatColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarPositiveFormatGradient_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarPositiveFormatGradient_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarNegativeFormatColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarNegativeFormatColor_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarLowerBoundRuleType_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarLowerBoundRuleType_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarLowerBoundRuleFormulaRange_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarLowerBoundRuleFormulaRange_cvt_REST_V15(): void;
+    function test_ConditionalFormats_GetDatabarUpperBoundRuleFormulaValue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarLowerBoundRuleFormulaValue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetDatabarLowerBoundRuleFormulaString_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddCustom_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddDatabar_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddIconSet_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetIconProperties_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetIconCriteria_cvt_REST_V15(): void;
+    function test_ConditionalFormats_SetIconCriteriaCustomIcon_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddColorScale_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddCellValue_cvt_REST_V15(): void;
+    function test_ConditionalFormats_AddCellValueOneOperator_cvt_REST_V15(): void;
+}
+declare module ExcelTest {
+    function test_CustomXmlParts_GetAll_cvt_REST_V15(): void;
+    function test_CustomXmlParts_Add_cvt_REST_V15(): void;
+    function test_CustomXmlParts_Update_cvt_REST_V15(): void;
+    function test_CustomXmlParts_Delete_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetByNamespace_cvt_REST_V15(): void;
+    function test_CustomXmlParts_CantGetByNamespace_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem0_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem1_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetOnlyItem2_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetCountAll_cvt_REST_V15(): void;
+    function test_CustomXmlParts_GetCountScoped_cvt_REST_V15(): void;
+}
+declare module ExcelTest {
+    function test_DocumentProperties_SetAndGetBuiltInDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_GetReadOnlyBuiltInDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddStringCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddPositiveBooleanCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddNegativeBooleanCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddDateCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddIntegerCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_AddFloatCustomDocumentProperties_cvt_REST_V17(): void;
+    function test_DocumentProperties_DeleteAllCustomDocumentProperties_cvt_REST_V17(): void;
+}
+declare module ExcelTest {
+    function test_Error_GetRangeWithInvalidAddress$Expect400_cvt_REST_V11(): void;
+    function test_Error_GetNonExistingSheet$Expect404_cvt_REST_V11(): void;
+    function test_Error_PatchRangeWithInvalidAddress$Expect400_cvt_REST_V11(): void;
+    function test_Error_PatchNonExistingSheet$Expect404_cvt_REST_V11(): void;
+}
+declare module ExcelTest {
+    function test_Functions_BasicNumberTest_cvt_REST_V12(): void;
+    function test_Functions_StringAndRangeAndBoolArguments_bvt_REST_V12(): void;
+    function test_Functions_AllowRangeObjectsAsPartOfArrayTest_cvt_REST_V12(): void;
+    function test_Functions_AllowOptionalParams_cvt_REST_V12(): void;
+    function test_Functions_FailOnInsufficientParameterCount_cvt_REST_V12(): void;
+    function test_Functions_ErrorsAreSurfaced_cvt_REST_V12(): void;
+    function test_Functions_WillExtractValueFromRangeIfNeeded_bvt_REST_V12(): void;
+    function test_Functions_ValueExtractionOnlyForSingleCell_cvt_REST_V12(): void;
+    function test_Functions_AllowNullAsPartOfArgument_cvt_REST_V12(): void;
+    function test_Functions_Coercion_cvt_REST_V12(): void;
+    function test_Functions_ComplexObjectInPlaceOfExpectedArrayFails_cvt_REST_V12(): void;
+    function test_Functions_CanUseGlobalNamedRange_cvt_REST_V12(): void;
+    function test_Functions_CanUseTableReferences_cvt_REST_V12(): void;
+    function test_Functions_CanUseTableReferencesColenSyntax_cvt_REST_V12(): void;
+    function test_Functions_FailOnCrossSheetAddress_cvt_REST_V12(): void;
+}
+declare module ExcelTest {
+    module NamedItemUtil {
+        function DeleteIfExist(namedItemName: string): OfficeExtension.IPromise<any>;
+        function DeleteIfExistOnWorksheet(namedItemName: string, worksheetName: string): OfficeExtension.IPromise<any>;
+    }
+    function test_NamedItem_RangeExisting_cvt_REST_V11(): void;
+    function test_NamedItem_AddSimple_cvt_REST_V14(): void;
+    function test_NamedItem_AddString_cvt_REST_V14(): void;
+    function test_NamedItem_AddNumber_cvt_REST_V14(): void;
+    function test_NamedItem_AddBool_cvt_REST_V14(): void;
+    function test_NamedItem_AddInvalid_cvt_REST_V14(): void;
+    function test_NamedItem_AddExisting_cvt_REST_V14(): void;
+    function test_NamedItem_SetComment_cvt_REST_V14(): void;
+    function test_NamedItem_AddWorksheet_cvt_REST_V14(): void;
+    function test_NamedRange_Count$WorkbookScope_cvt_REST_V14(): void;
+    function test_NamedRange_Count$Worksheetcope_cvt_REST_V14(): void;
+}
+declare module ExcelTest {
+    function test_PageLayout_Orientation_Portrait_cvt_REST_V17(): void;
+    function test_PageLayout_Orientation_Landscape_cvt_REST_V17(): void;
+    function test_PageLayout_PaperSize_cvt_REST_v17(): void;
+    function test_PageLayout_BlackAndWhite_cvt_REST_v17(): void;
+    function test_PageLayout_PrintErrors_cvt_REST_v17(): void;
+}
+declare module ExcelTest {
+    function test_Protection_LockStatus_cvt_REST_V12(): void;
+    function test_Protection_FormulaHiddenStatus_cvt_REST_V12(): void;
+    function test_Protection_ProtectAndUnprotectSheetNoPassword_cvt_REST_V12(): void;
+    function test_Protection_ProtectAndUnprotectSheetWithPassword_cvt_REST_V17(): void;
+    function test_Protection_ProtectAndUnprotectWorkbookNoPassword_cvt_REST_V17(): void;
+    function test_Protection_ProtectAndUnprotectWorkbookWithPassword_cvt_REST_V17(): void;
+}
+declare module ExcelTest {
+    function test_ROAgave_Read_cvt_REST_V11(): void;
+    function test_ROAgave_WriteBasicTest_cvt_REST_V11(): void;
+}
+declare module ExcelTest {
+    function test_RangeFormat_FillColor_cvt_REST_V11(): void;
+    function test_RangeFormat_FillClear_cvt_REST_V11(): void;
+    function test_RangeFormat_WrapText_cvt_REST_V11(): void;
+    function test_RangeFormat_HorizontalAlignment_cvt_REST_V11(): void;
+    function test_RangeFormat_VerticalAlignment_cvt_REST_V11(): void;
+    function test_RangeFormat_BorderLineStyle_cvt_REST_V11(): void;
+    function test_RangeFormat_BorderColor_cvt_REST_V11(): void;
+    function test_RangeFormat_BorderWeight_cvt_REST_V11(): void;
+    function test_RangeFormat_BorderCollectionCount_cvt_REST_V11(): void;
+    function test_RangeFormat_BorderCollectionItemAt_cvt_REST_V11(): void;
+    function test_RangeFormat_FontBold_cvt_REST_V11(): void;
+    function test_RangeFormat_FontColor_cvt_REST_V11(): void;
+    function test_RangeFormat_FontItalic_cvt_REST_V11(): void;
+    function test_RangeFormat_FontName_cvt_REST_V11(): void;
+    function test_RangeFormat_FontSize_cvt_REST_V11(): void;
+    function test_RangeFormat_FontUnderline_cvt_REST_V11(): void;
+    function test_RangeFormat_GetNullPropertyandPatchNullableProperty_cvt_REST_V11(): void;
+    function test_RangeFormat_RowHeightSet_cvt_REST_V12(): void;
+    function test_RangeFormat_RowHeightAutofit_cvt_REST_V12(): void;
+    function test_RangeFormat_ColWidthSet_cvt_REST_V12(): void;
+    function test_RangeFormat_ColWidthAutofit_cvt_REST_V12(): void;
+    function test_RangeFormat_SetAndGetTextOrientation_cvt_REST_V17(): void;
+    function test_RangeFormat_SetInvalidTextOrientationValue_cvt_REST_V17(): void;
+    function test_RangeFormat_SetColumnWidthStandardWidth_cvt_REST_V17(): void;
+    function test_RangeFormat_GetStandardWidth_cvt_REST_V17(): void;
+    function test_RangeFormat_GetUniformNonStandardWidth_cvt_REST_V17(): void;
+    function test_RangeFormat_GetNonUniformNonStandardWidth_cvt_REST_V17(): void;
+    function test_RangeFormat_SetRowWithStandardHeight_cvt_REST_V17(): void;
+    function test_RangeFormat_GetStandardHeight_cvt_REST_V17(): void;
+    function test_RangeFormat_GetUniformNonStandardHeight_cvt_REST_V17(): void;
+    function test_RangeFormat_GetNonUniformNonStandardHeight_cvt_REST_V17(): void;
+}
+declare module ExcelTest {
+    function test_Range_SetMultipleValues_bvt_REST_V11(): void;
+    function test_Range_SetMultipleValues$Null_cvt_REST_V13(): void;
+    function test_Range_SetSingleValue_cvt_REST_V11(): void;
+    function test_Range_Formulas_cvt_REST_V11(): void;
+    function test_Range_FormulasR1C1_cvt_REST_V12(): void;
+    function test_Range_NumberFormat_cvt_REST_V11(): void;
+    function test_Range_ValueTypes_cvt_REST_V11(): void;
+    function test_Range_OtherProperties_cvt_REST_V11(): void;
+    function test_Range_SelectShouldFail_cvt_REST_V11(): void;
+    function test_Range_InsertRow_cvt_REST_V11(): void;
+    function test_Range_DeleteRow_cvt_REST_V11(): void;
+    function test_Range_InsertColumn_cvt_REST_V11(): void;
+    function test_Range_DeleteColumn_cvt_REST_V11(): void;
+    function test_Range_OffSet_cvt_REST_V11(): void;
+    function test_Range_GetRow_cvt_REST_V11(): void;
+    function test_Range_GetColumn_cvt_REST_V11(): void;
+    function test_Range_BoundingRect_cvt_REST_V11(): void;
+    function test_Range_Intersection_cvt_REST_V11(): void;
+    function test_Range_Clear_cvt_REST_V11(): void;
+    function test_Range_UsedRangeValuesOnlyNull_cvt_REST_V11(): void;
+    function test_Range_UsedRangeValuesOnlyFalse_cvt_REST_V12(): void;
+    function test_Range_UsedRangeValuesOnlyTrue_cvt_REST_V12(): void;
+    function test_Range_Worksheet_cvt_REST_V11(): void;
+    function test_Range_LargeData_cvt_REST_V11(): void;
+    function test_Range_MergeUnmergeAcross_cvt_REST_V12(): void;
+    function test_Range_MergeUnmerge_cvt_REST_V12(): void;
+    function test_Range_HideUnhideCols_cvt_REST_V12(): void;
+    function test_Range_HideUnhideRows_cvt_REST_V12(): void;
+    function test_Range_GetRowsAbove_cvt_REST_V11(): void;
+    function test_Range_GetRowsAboveOutOfBoundsShouldFail_cvt_REST_V11(): void;
+    function test_Range_GetRowsBelow_cvt_REST_V11(): void;
+    function test_Range_GetColumnsAfter_cvt_REST_V11(): void;
+    function test_Range_GetColumnsBefore_cvt_REST_V11(): void;
+    function test_Range_GetColumnsBeforeOutOfBoundsShouldFail_cvt_REST_V11(): void;
+    function test_Range_GetResizedRange_cvt_REST_V11(): void;
+    function test_Range_Areas_cvt_REST_V18(): void;
+}
+declare module ExcelTest {
+    function test_RangeView_HiddenRowsValuesGet_cvt_REST_V13(): void;
+    function test_RangeView_HiddenRowsValuesPut_cvt_REST_V13(): void;
+    function test_RangeView_HiddenRowsRowCountGet_cvt_REST_V13(): void;
+    function test_RangeView_HiddenRowsCellAddressGet_cvt_REST_V13(): void;
+    function test_RangeView_HiddenColumnsValuesGet_cvt_REST_V13(): void;
+    function test_RangeView_HiddenColumnsColumnCountGet_cvt_REST_V13(): void;
+    function test_RangeView_RowsCollectionValuesGet_cvt_REST_V13(): void;
+    function test_RangeView_RowsCollectionValuesCount_cvt_REST_V13(): void;
+    function test_RangeView_RowsCollectionValuesGetSkipTop_cvt_REST_V13(): void;
+    function test_RangeView_RowsCollectionValuesSet_cvt_REST_V13(): void;
+}
+declare module ExcelTest {
+}
+declare module ExcelTest {
+}
+declare module ExcelTest {
+    function test_Worksheet_LoadAllSheets_bvt_REST_V11(): void;
+    function test_Worksheet_LoadSheetsExpand_cvt_REST_V11(): void;
+    function test_Worksheet_LoadSheetsTop_cvt_REST_V11(): void;
+    function test_Worksheet_LoadSheetsTopSkip_cvt_REST_V11(): void;
+    function test_Worksheet_WorksheetCollectionAdd_cvt_REST_V11(): void;
+    function test_Worksheet_GetActiveWorksheet_cvt_REST_V11(): void;
+    function test_Worksheet_Delete_cvt_REST_V11(): void;
+    function test_Worksheet_ActivateShouldFail_cvt_REST_V11(): void;
+    function test_Worksheet_GetCell_cvt_REST_V11(): void;
+    function test_Worksheet_GetRangeWithoutInput_cvt_REST_V11(): void;
+    function test_Worksheet_Id_cvt_REST_V11(): OfficeExtension.IPromise<void>;
+    function test_Worksheet_Position_cvt_REST_V11(): void;
+    function test_Worksheet_Name_cvt_REST_V11(): void;
+    function test_Worksheet_UsedRangeEmpty_cvt_REST_V11(): void;
+    function test_Worksheet_UsedRange_cvt_REST_V11(): void;
+    function test_Worksheet_Visibility_cvt_REST_V11(): void;
+    function test_Worksheet_Count$All_cvt_REST_V14(): void;
+    function test_Worksheet_Count$VisibleOnly_cvt_REST_V14(): void;
+    function test_Worksheet_FirstLast$VisibleOnly_cvt_REST_V15(): void;
+    function test_Worksheet_NextPrevious$VisibleOnly_cvt_REST_V15(): void;
+    function test_Worksheet_NextPreviousOutOfBounds$VisibleOnly_cvt_REST_V15(): void;
+    function test_Worksheet_TabColorSetColor_cvt_REST_V17(): void;
+    function test_Worksheet_TabColorSetNamedColor_cvt_REST_V17(): void;
+    function test_Worksheet_TabColorSetAutoColor_cvt_REST_V17(): void;
+    function test_Worksheet_TabColorSetNull_cvt_REST_V17(): any;
+    function test_Worksheet_GetSetGridlines_cvt_REST_V17(): void;
+    function test_Worksheet_GetSetHeadings_cvt_REST_V17(): void;
+    function test_Worksheet_FreezePanes_cvt_REST_V17(): void;
+    function test_Worksheet_GetStandardWidth_cvt_REST_V17(): void;
+    function test_Worksheet_SetStandardWidth_cvt_REST_V17(): void;
+    function test_Worksheet_SetStandardWidthWithNegativeInvalidValue_cvt_REST_V17(): void;
+    function test_Worksheet_SetStandardWidthWithPositiveInvalidValue_cvt_REST_V17(): void;
+    function test_Worksheet_GetStandardHeight_cvt_REST_V17(): void;
+    function test_Worksheet_Copy$NotSpecified_cvt_REST_V17(): void;
+}
+declare module ExcelTest {
+    module SortUtil {
+        function SetInitialState(): OfficeExtension.IPromise<any>;
+        function SetInitialTextState(): OfficeExtension.IPromise<any>;
+        function SetInitialSingleRowState(): OfficeExtension.IPromise<any>;
+        function SetInitialTwoColState(): OfficeExtension.IPromise<any>;
+    }
+    function test_SortFilter_SortRange_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeAscending_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeHasHeader_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeAscendingHasHeader_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeMatchCase_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeColumn_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeMultiple_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeCellColor_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeFontColor_cvt_REST_V12(): void;
+    function test_SortFilter_SortRangeIcon_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableBasic_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableAscending_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableMatchCase_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableMultipleSortLevel_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableFontColor_cvt_REST_V12(): void;
+    function test_SortFilter_SortTableCellColor_cvt_REST_V12(): void;
+    function test_SortFilter_FilterCustom_cvt_REST_V12(): void;
+    function test_SortFilter_FilterTop_cvt_REST_V12(): void;
+    function test_SortFilter_FilterTopPercent_cvt_REST_V12(): void;
+    function test_SortFilter_FilterBottomItems_cvt_REST_V12(): void;
+    function test_SortFilter_FilterBottomPercent_cvt_REST_V12(): void;
+    function test_SortFilter_FilterCellColor_cvt_REST_V12(): void;
+    function test_SortFilter_FilterFontColor_cvt_REST_V12(): void;
+    function test_SortFilter_FilterDynamic_cvt_REST_V12(): void;
+    function test_SortFilter_FilterValuesStringOnly_cvt_REST_V12(): void;
+    function test_SortFilter_FilterNone_cvt_REST_V12(): void;
+    function test_SortFilter_FilterClear_cvt_REST_V12(): void;
+}
+declare module ExcelTest {
+    function test_Style_CreateStyle_cvt_REST_V17(): void;
+    function test_Style_ApplyStyle_cvt_REST_V17(): void;
+    function test_Style_ApplyBuiltInStyle_cvt_REST_V17(): void;
+    function test_Style_DeleteStyle_cvt_REST_V17(): void;
+    function test_Style_GetStyleProperties_cvt_REST_V17(): void;
+    function test_Style_PutStyleProperties_cvt_REST_V17(): void;
+}
+declare module ExcelTest {
+    function test_Table_GetColumnByName_cvt_REST_V11(): void;
+    function test_Table_GetColumnById_cvt_REST_V11(): void;
+    function test_Table_GetColumnByInvalidName_cvt_REST_V11(): void;
+    function test_Table_GetColumnByInvalidId_cvt_REST_V11(): void;
+    function test_Table_GetColumnByIndex_cvt_REST_V11(): void;
+    function test_Table_GetColumnByInvalidIndex_cvt_REST_V11(): void;
+    function test_Table_GetColumnCount_cvt_REST_V11(): void;
+    function test_Table_AddColumnWithAddMethod_cvt_REST_V11(): void;
+    function test_Table_AddColumnWithName_cvt_REST_V14(): void;
+    function test_Table_AddColumnWithValuesAndName_cvt_REST_V14(): void;
+    function test_Table_AddColumnDeleteColumnNonGraph_cvt_REST_V11(): void;
+    function test_Table_GetColumnId_cvt_REST_V11(): void;
+    function test_Table_GetColumnName_cvt_REST_V11(): void;
+    function test_Table_GetColumnIndex_cvt_REST_V11(): void;
+    function test_Table_GetColumnRange_cvt_REST_V11(): void;
+    function test_Table_GetColumnHeaderRowRange_cvt_REST_V11(): void;
+    function test_Table_GetColumnDataBodyRange_cvt_REST_V11(): void;
+    function test_Table_GetColumnTotalRowRange_cvt_REST_V11(): void;
+    function test_Table_GetColumnTotalRowRangeWithNoTotalRow_cvt_REST_V11(): void;
+    function test_Table_GetColumnValues_cvt_REST_V11(): void;
+    function test_Table_ColumnCount_cvt_REST_V14(): void;
+}
+declare module ExcelTest {
+    function test_Table_GetRowByIndex_cvt_REST_V11(): void;
+    function test_Table_GetRowByInvalidIndex_cvt_REST_V11(): void;
+    function test_Table_GetRowCount_cvt_REST_V11(): void;
+    function test_Table_AddRowWithAddMethod_cvt_REST_V11(): void;
+    function test_Table_AddRow_cvt_REST_V11(): void;
+    function test_Table_GetRowIndex_cvt_REST_V11(): void;
+    function test_Table_GetRowRange_cvt_REST_V11(): void;
+    function test_Table_GetRowValues_cvt_REST_V11(): void;
+    function test_Table_DeleteRow_cvt_REST_V11(): void;
+    function test_Table_RowCount_cvt_REST_V14(): void;
+}
+declare module ExcelTest {
+    function test_Table_LoadTableAndRangeAddress_bvt_REST_V11(): void;
+    function test_Table_LoadNonexistingTableString_cvt_REST_V11(): void;
+    function test_Table_LoadTableInt_cvt_REST_V11(): void;
+    function test_Table_LoadNonexistingTableInt_cvt_REST_V11(): void;
+    function test_Table_CreateTableInvalidSheetname_cvt_REST_V11(): void;
+    function test_Table_CreateTableInvalidAddress_cvt_REST_V11(): void;
+    function test_Table_CreateValidTable_cvt_REST_V11(): void;
+    function test_Table_Retrieval_cvt_REST_V11(): void;
+    function test_Table_RetrievalAndDeletion_cvt_REST_V11(): void;
+    function test_Table_PropertyPut_cvt_REST_V11(): void;
+    function test_Table_Count_cvt_REST_V11(): void;
+    function test_Table_GetItemAt_cvt_REST_V11(): void;
+    function test_Table_GetItemAtInvalidIndex_cvt_REST_V11(): void;
+    function test_Table_Rows_cvt_REST_V11(): void;
+    function test_Table_Columns_cvt_REST_V11(): void;
+    function test_Table_GetRange_cvt_REST_V11(): void;
+    function test_Table_GetHeaderRowRange_cvt_REST_V11(): void;
+    function test_Table_GetDataBodyRange_cvt_REST_V11(): void;
+    function test_Table_GetTotalRowRange_cvt_REST_V11(): void;
+    function test_Table_GetTotalRowRangeWithNoTotalRow_cvt_REST_V11(): void;
+    function test_Table_Worksheet_cvt_REST_V12(): void;
+    function test_Table_Count_cvt_REST_V14(): void;
+}
+declare module ExcelTest {
+    function test_Workbook_GetSelectedRange_cvt_REST_V11(): void;
+    function test_Workbook_GetActiveCell_cvt_REST_V11(): void;
+    function test_Workbook_Application_cvt_REST_V11(): void;
+    function test_Workbook_ApplicationCalculationMode_cvt_REST_V11(): void;
+    function test_Workbook_ApplicationCalculation_cvt_REST_V11(): void;
+    function test_Workbook_ProcessQuery_cvt_REST_V11(): void;
+    function test_Workbook_ProcessQuery$ReadOperation$ReadFlags_cvt_REST_V14(): void;
+    function test_Workbook_ProcessQuery$ReadOperation$WriteFlags_cvt_REST_V14(): void;
+    function disabledtest_Workbook_ProcessQuery$WriteOperation$ReadFlags_cvt_REST_V14(): void;
+    function test_Workbook_ProcessQuery$WriteOperation$WriteFlags_cvt_REST_V14(): void;
+    function test_Workbook_GetName_cvt_REST_V17(): any;
+    function test_Workbook_GetReadOnly_cvt_REST_V18(): void;
+    function test_Workbook_GetSaved_cvt_REST_V18(): void;
+    function test_Workbook_SetSavedfalse_cvt_REST_V18(): void;
+    function test_Workbook_SetSavedTrue_cvt_REST_V18(): void;
+}
+declare module ExcelTest {
+    function test_OfficeJS_BindingAddFromSelection_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingAddFromNamedRange_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingAddWithSameName_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingIdGetsAssignedAutomatically_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingWithFormatting_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingWithStartRowAndUsingCellAddress_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingWithStartRowAndUsingLocalAddress_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingAddFromNamedItemUsingBindingThatAlreadyExists_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingWithStartRowOutOfBounds_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingReleaseWorks_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingReuse_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingFilteredData_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingGetDataAsyncCoercionTableAsText_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingGetDataAsyncCoercionMatrix_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingAddFromAddressFailsOnDiscontinuous_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingAddFromNamedRangeFailsIfDoesntExist_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingsGetAll_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingOnSheetThatGetsDeleted_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingCanOnlyBeRemovedOnce_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingTextBindingSingleCell_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingTextBindingSetDataAsync_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingTextBindingOnlyWorksOnSingleCell_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingMatrixBindingSetDataAsync_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingCanBeSuperLargeButWillFailWhenRetrievingData_cvt_JScript_V10(): void;
+    function test_OfficeJS_OfficeSelectSuccess_cvt_JScript_V10(): void;
+    function test_OfficeJS_OfficeSelectNotFound_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingReadBackWithCoercionType_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingReadBackWithInvalidCoercionType_cvt_JScript_V10(): void;
+    function test_OfficeJS_BindingReuseId_cvt_JScript_V10(): void;
+    function test_OfficeJS_DeleteBindingReferencedSheet_cvt_JScript_V10(): Promise<void>;
+}
+declare module ExcelTest {
+    function test_OfficeJS_SelectionChangedEvent_cvt_JScript_V10(): void;
+    function test_OfficeJS_DataChangedEvent_cvt_JScript_V10(): void;
+    function test_OfficeJS_MultipleEventHandlers_cvt_JScript_V10(): void;
+    function test_OfficeJS_EventDocumentSelectionChangedMultiple_cvt_JScript_V10(): void;
+    function test_OfficeJS_EventDocumentSelectionChangedAcrossSheets_cvt_JScript_V10(): void;
+    function test_OfficeJS_EventRemoveReAdd_cvt_JScript_V10(): void;
+}
+declare module ExcelTest {
+    function test_OfficeJS_GoToByIDBindingFound_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDNamedItemFound_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDNamedItemMissing_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDBindingMissing_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDAddress_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDCanBeLocalAddress_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDSheetNameOnly_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIDInvalidAddress_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIdSelectionModeNoneNamedItem_cvt_JScript_V10(): void;
+    function test_OfficeJS_GoToByIdSelectionModeNoneTable_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetFilePropertiesAsync_cvt_JScript_V10(): void;
+}
+declare module ExcelTest {
+    function test_Perf_OfficeJSBindingsSmall_cvt_JScript_V10(): void;
+    function test_Perf_OfficeJSBindingsLarge_cvt_JScript_V10(): void;
+    function test_Perf_OfficeJSBindingsAddAndReleaseOnly_cvt_JScript_V10(): void;
+}
+declare module ExcelTest {
+    function test_OfficeJS_SetSelectedDataText_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataMatrix_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataImage_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataImageWidthHeight_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataImageWidthHeightLeftTop_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataMatrixLarge_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataUnboundedError_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataWrongCoersion_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataWrongShape_cvt_JScript_V10(): void;
+    function test_OfficeJS_SetSelectedDataWrongShapeForTable_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataMatrix_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataString_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataTable_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataWithFilter_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataNumberFormat_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataErrorOnInvalidCoercion_cvt_JScript_V10(): void;
+    function test_OfficeJS_GetSelectedDataErrorOnTooLargeOfData_cvt_JScript_V10(): void;
+}
+declare module ExcelTest {
+    function test_OfficeJS_SettingsBasicReadWriteWithNoAsync_cvt_JScript_V10(): void;
+    function test_OfficeJS_SettingsBasicReadWriteWithAsync_cvt_JScript_V10(): void;
+    function test_OfficeJS_SettingsRemovalPerists_cvt_JScript_V10(): void;
+}
+declare module ExcelTest {
+    function test_OfficeJS_TableAddFromSelection_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontFamily_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontColor_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontBold_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontItalic_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontSize_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontUnderline_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontDirection_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontStrikethrough_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontSuperscript_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontSubScript_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatFontNormal_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBorderColor_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBorderStyle_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBorderAllEdgesStyle_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBorderOutInlineStyle_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBgColor_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBgColorOneRow_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBgColorOneCol_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatBgColorOneCell_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatCellWidth_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatCellWidthAutofit_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatCellHeight_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatCellHeightAutoFit_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatWrapping_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatHorizontalAlign_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatVertAlign_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatNumberFormat_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatUpdateSetFormats_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableFormatClearFormats_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsStyle_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsHeaderRow_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsTotalRow_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsFirstColumn_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsLastColumn_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsBandedRows_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsBandedColumns_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsfilterButton_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableOptionsUpdate_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataAsyncTData_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataAsyncTDataHeader_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataAsyncTDataStartCol_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataAsyncTDataStartRow_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataAsyncMatrix_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableBindingSetDataForAdHocTable_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableAddRows_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableAddRowsNoHeader_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableAddCols_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableAddColsTData_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableAddColsTDataNoHeader_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableDeleteAllDataValues_cvt_JScript_V10(): void;
+    function test_OfficeJS_TableDeleteAllDataValuesFailsForAdHocTable_cvt_JScript_V10(): void;
+    function test_OfficeJS_SheetProtectionAddTable_cvt_JScript_V12(): void;
+    function test_OfficeJS_SheetProtectionAddTableFails_cvt_JScript_V12(): void;
+    function test_OfficeJS_SheetProtectionAddTableRows_cvt_JScript_V12(): void;
+    function test_OfficeJS_SheetProtectionAddTableCols_cvt_JScript_V12(): void;
+}
+declare module ExcelTest {
+    function test_Pivot_GetPivotTables_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_GetPivotCaches_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotCache$Add_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTables$AddWithFields_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_ColumnField$Properties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_RowField$Properties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_DataField$Properties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetDataField_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$PivotItems_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotItemProperties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$NamingProperties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$DisplayContextTooltips_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$DisplayErrorString_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$DisplayFieldCaptions_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$DisplayNullString_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$EnableFieldDialog_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$EnableFieldList_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$EnableWizard_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$AllowMultipleFilters_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$AlternativeText_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ColumnGrandTotals_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RowGrandTotals_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetColumnRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetRowRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetEntireRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$FieldListSortAscending_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$HasAutoFormat_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$Hidden_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$PreserveFormatting_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$PrintDrillIndicators_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$PrintTitles_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RefreshDateAndRefreshName_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RepeatItemsOnEachPrintedPage_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$SaveData_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowDrillIndicators_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowPageMultipleItemLabel_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowTableStyleColumnHeaders_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowTableStyleColumnStripes_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowTableStyleLastColumn_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowTableStyleRowHeaders_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowTableStyleRowStripes_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ShowValuesRow_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$SmallGrid_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$SortUsingCustomLists_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$SubtotalHiddenPageItems_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$Summary_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$Tag_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$TotalsAnnotation_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$VacatedStyle_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$Value_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RefreshTable_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$Update_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetDataPivotField_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$InGridDropZones_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$PivotSelect_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RowAxisLayout_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$EnableDataValueEditing_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$ManualUpdate_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$GetPageRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$GetVisibleFields_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$RepeatAllLabels_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotTable$SubtotalLocation_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_DataField$ChangeFunction_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_DataField$ChangeCalculation_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_DataField$ChangeCalculationRunningTotal_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_RowFieldItem$ShowDetail_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$SubtotalsAuto_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$SubtotalsAutoIgnoreOthers_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$SubtotalsAllOff_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$SubtotalsCustomSome_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$SubtotalsCustomAll_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$PageField_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$DataRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$GetChildField_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$GetChildItems_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotItem$VariousProperties_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotItem$DataRange_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotItem$Value_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotChart$AddChart_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotChart$AddChartWithPageField_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotChart$AddChartNoSeriesBy_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotChart$AddChartWithInvalidType_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$AutoSort_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$AutoSortAscending_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$AutoSortColumnBySum_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$PageFieldCurrentPage_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotField$PageFieldCurrentPageDate_cvt_COMBridge_V11Pivot(): void;
+    function test_Pivot_PivotCache$GetPivotCacheAddress_cvt_COMBridge_V12Pivot(): Promise<void>;
+}
